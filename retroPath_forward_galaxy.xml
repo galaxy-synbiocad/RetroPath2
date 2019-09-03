@@ -1,0 +1,59 @@
+<tool id="retropath2_forward" name="Forward RetroPath2.0" version="8.0">
+  <description>Explore the possible compounds that may be produced</description>
+  <requirements>
+    <container type="docker">ibisba/retropath2:latest</container>
+  </requirements>
+  <stdio>
+		<regex match="ERROR: RetroPath2.0 has not found any results" level="error" />
+		<regex match="ERROR: Source has been found in the sink" level="error" />
+		<regex match="ERROR: Cannot find source-in-sink.csv file" level="error" />
+	</stdio>
+  <command detect_errors="exit_code"><![CDATA[
+		'$__tool_directory__/pyKnime_forward.py' -source '$source' -dmin '$dmin' -dmax '$dmax' -maxSteps '$maxSteps' -resultsCSV '$resultsCSV' -timeout '$timeout' -topx '$topx' -mwmax_source '$mwmax_source' -mwmax_cof '$mwmax_cof'
+  ]]></command>
+  <inputs>
+    <param name="dmin" type="integer" value="0" label="Minimum rule diameter" />
+    <param name="dmax" type="integer" value="1000" label="Maximum rule diameter" />
+    <param name="maxSteps" type="integer" value="5" label="Pathway length" />
+    <param name="topx" type="integer" value="100" label="TopX" />
+    <param name="mwmax_source" type="integer" value="1000" label="mwmax ource" />
+    <param name="mwmax_cof" type="integer" value="1000" label="mwmax cof" />
+    <param name="source" type="data" format="csv" label="Source" />
+		<!-- <param name="rules" type="data" format="csv" label="Rules" /> -->
+    <param name="timeout" type="integer" value="300" label="Timeout (min)" />
+  </inputs>
+  <outputs>
+    <data name="resultsCSV" format="csv" label="RetroPath_Forward_Pathways" />
+  </outputs>
+  <tests>
+    <test>
+      <param name="dmin" value="0" />
+      <param name="dmax" value="1000" />
+      <param name="maxSteps" value="5" />
+      <param name="source" value="/home/src/tutorial_data/carotene/source.csv" />
+      <param name="topx" value="100" />
+      <param name="mwmax-source" value="1000" />
+      <param name="mwmax-cof" value="1000" />
+      <param name="timeout" value="300" />
+    </test>
+  </tests>
+  <help>
+   This is the help section. Should really write something usefull here :) 
+  </help>
+  <citations>
+    <citation type="bibtex">
+@article{delepine2018retropath2,
+  title={RetroPath2. 0: a retrosynthesis workflow for metabolic engineers},
+  author={Del{\'e}pine, Baudoin and Duigou, Thomas and Carbonell, Pablo and Faulon, Jean-Loup},
+  journal={Metabolic engineering},
+  volume={45},
+  pages={158--170},
+  year={2018},
+  publisher={Elsevier}}
+    </citation>
+  </citations>
+</tool>
+
+<!-- 
+		'$__tool_directory__/pyKnime_forward.py' -source '$source' -rules '$rules' -dmin '$dmin' -dmax '$dmax' -maxSteps '$maxSteps' -resultsCSV '$resultsCSV' -timeout '$timeout' -topx '$topx' -mwmax_source '$mwmax_source' -mwmax_cof '$mwmax_cof'
+-->
