@@ -9,24 +9,20 @@ ENV HOME_DIR /home/knime
 # HACK: Install tzdata at the beginning to not trigger an interactive dialog later on
 RUN apt-get update \
     && apt-get install -y software-properties-common curl tzdata \
-    #&& apt-add-repository -y ppa:webupd8team/java \
     && apt-get update \
-    #&& echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
-    #&& echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
-    #&& apt-get install -y oracle-java8-set-default libgtk2.0-0 libxtst6 \
     && apt-get install -y \
          openjdk-8-jdk libgtk2.0-0 libxtst6 \
          libwebkitgtk-3.0-0 \
          python python-dev python-pip \
          r-base r-recommended
 
- # Download KNIME
+# Download KNIME
 RUN curl -L "$DOWNLOAD_URL" | tar vxz -C $INSTALLATION_DIR \
     && mv $INSTALLATION_DIR/knime_* $INSTALLATION_DIR/knime
 
 # Clean up
 RUN apt-get --purge autoremove -y software-properties-common curl \
-    && apt-get clean
+ && apt-get clean
 
 # Install pandas and protobuf so KNIME can communicate with Python
 RUN pip install pandas && pip install protobuf
@@ -89,8 +85,7 @@ ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49
 
 RUN apt-get --quiet update && \
 	apt-get --quiet --yes dist-upgrade && \
-	apt-get --quiet --yes install \
-		curl
+	apt-get --quiet --yes install curl
 
 # Download RetroPath2.0
 WORKDIR /tmp
@@ -119,15 +114,8 @@ org.rdkit.knime.feature.feature.group \
 
 COPY pyKnime.py /home/src/pyKnime.py
 COPY pyKnime.py /home/src/pyKnime_forward.py
-#RUN mkdir /home/src/results
 RUN chmod 755 /home/src/pyKnime.py
 RUN chmod 755 /home/src/pyKnime_forward.py
-#RUN chmod 755 /home/src/pyKnime.py
-#RUN chown -R 1000:1000 /home/src/data
-#RUN chown -R 1450:1450 /home/src/data
-#RUN chown -R 1550:1550 /home/src/data
 RUN chown -R 755 /home/src/data
-#RUN chown -R 755 /home/src/data
-#RUN chmod -R 755 /home/src/results
 RUN ln -s /home/src/pyKnime.py /usr/bin
 RUN ln -s /home/src/pyKnime_forward.py /usr/bin
