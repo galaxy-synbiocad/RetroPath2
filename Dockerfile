@@ -8,18 +8,17 @@ ENV HOME_DIR /home/knime
 # Install everything
 # HACK: Install tzdata at the beginning to not trigger an interactive dialog later on
 RUN apt-get update \
-    && apt-get install -y software-properties-common curl \
-    && apt-get install -y tzdata \
+    && apt-get install -y software-properties-common curl tzdata \
     #&& apt-add-repository -y ppa:webupd8team/java \
     && apt-get update \
     #&& echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
     #&& echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
     #&& apt-get install -y oracle-java8-set-default libgtk2.0-0 libxtst6 \
-    && apt-get install -y openjdk-8-jdk libgtk2.0-0 libxtst6 \
-    && apt-get install -y libwebkitgtk-3.0-0 \
-    && apt-get install -y python python-dev python-pip \
-    && apt-get install -y curl \
-    && apt-get install -y r-base r-recommended
+    && apt-get install -y \
+         openjdk-8-jre libgtk2.0-0 libxtst6 \
+         libwebkitgtk-3.0-0 \
+         python python-dev python-pip \
+         r-base r-recommended
 
  # Download KNIME
 RUN curl -L "$DOWNLOAD_URL" | tar vxz -C $INSTALLATION_DIR \
