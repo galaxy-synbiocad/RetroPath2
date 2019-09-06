@@ -15,7 +15,7 @@ RUN apt-get update \
     #&& echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
     #&& apt-get install -y oracle-java8-set-default libgtk2.0-0 libxtst6 \
     && apt-get install -y \
-         openjdk-8-jre libgtk2.0-0 libxtst6 \
+         openjdk-8-jdk libgtk2.0-0 libxtst6 \
          libwebkitgtk-3.0-0 \
          python python-dev python-pip \
          r-base r-recommended
