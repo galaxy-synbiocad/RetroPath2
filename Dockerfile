@@ -112,10 +112,10 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
-COPY pyKnime.py /home/src/pyKnime.py
-COPY pyKnime.py /home/src/pyKnime_forward.py
-RUN chmod 755 /home/src/pyKnime.py
-RUN chmod 755 /home/src/pyKnime_forward.py
-RUN chown -R 755 /home/src/data
-RUN ln -s /home/src/pyKnime.py /usr/bin
-RUN ln -s /home/src/pyKnime_forward.py /usr/bin
+#COPY pyKnime.py /home/src/pyKnime.py
+#COPY pyKnime.py /home/src/pyKnime_forward.py
+#RUN chmod 755 /home/src/pyKnime.py
+#RUN chmod 755 /home/src/pyKnime_forward.py
+#RUN chown -R 755 /home/src/data
+#RUN ln -s /home/src/pyKnime.py /usr/bin
+#RUN ln -s /home/src/pyKnime_forward.py /usr/bin
