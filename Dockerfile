@@ -14,7 +14,7 @@ RUN apt-get update \
          openjdk-8-jdk libgtk2.0-0 libxtst6 \
          libwebkitgtk-3.0-0 \
          python python-dev python-pip \
-         r-base r-recommended
+         r-base r-recommended wget
 
 # Download KNIME
 RUN curl -L "$DOWNLOAD_URL" | tar vxz -C $INSTALLATION_DIR \
@@ -98,7 +98,12 @@ RUN mv src /home/
 WORKDIR /home/src/
 
 #copy the rules_rall.tsv
-COPY cache/rules_rall_rp2.csv /home/src/
+#COPY cache/rules_rall_rp2.csv /home/src/
+RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall_rp2.tar.gz && \
+    tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
+    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/src/rules_rall_rp2.csv && \
+    rm -r /home/src/retrorules_rr02_rp2_hs && \
+    rm /home/src/rules_rall_rp2.tar.gz
 
 #install the additional packages required for running retropath KNIME workflow
 RUN /usr/local/knime/knime -application org.eclipse.equinox.p2.director -nosplash -consolelog \
