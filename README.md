@@ -11,7 +11,7 @@ WARNING: The galaxy tool .xml must be in the same folder as the script it calls
 
 WARNING: need to add docker to sudo
 
-WARNING: need to include the rule_rall_rp2.csv for knime
+WARNING: need to include the rule_rall_rp2.csv for knime in the /home/src/ folder
 
 ```
 sudo groupadd docker
@@ -22,13 +22,13 @@ sudo service docker restart
 We will cover calling RetroPath2.0 using Galaxy where the docker is installed locally and when the docker is remotely located using the Pulsar package. In both cases one needs to build the docker using the following command:
 
 ```
-docker build -t ibisba/retropath2 .
+docker build -t brsynth/retropath2 .
 ```
 
 It is recommended that one tests the docker using the following commands. First enter the docker in bash using:
 
 ```
-docker run -it ibisba/retropath2 /bin/bash
+docker run -it brsynth/retropath2 /bin/bash
 ```
 
 Once inside the docker in bash, use the following command to call a KNIME job using the example files provided:
@@ -42,7 +42,6 @@ The pyKnime.py script will write the output files in the "outDir" as well as loc
 ### Local docker
 
 If one has the docker and the Galaxy services on the same machine, then the following Galaxy configurations are required to make them run. 
-
 
 ##### Add the tool to Galaxy's tool_conf.xml
 
@@ -126,8 +125,6 @@ To run the tool on a remote server and call it using any Galaxy instance, we nee
   </tools>
 </job_conf>
 ```
-
-
 
 ### How to cite RetroPath2.0?
 Please cite:
