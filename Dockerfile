@@ -27,6 +27,9 @@ RUN apt-get --purge autoremove -y software-properties-common curl \
 # Install pandas and protobuf so KNIME can communicate with Python
 RUN pip install pandas && pip install protobuf
 
+#install rq and redis
+RUN pip install rq redis
+
 # Install Rserver so KNIME can communicate with R
 RUN R -e 'install.packages(c("Rserve"), repos="http://cran.rstudio.com/")'
 
