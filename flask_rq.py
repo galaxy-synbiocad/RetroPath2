@@ -18,6 +18,7 @@ from rq import Connection, Queue
 
 from retropath2 import runRetroPath2
 
+
 #######################################################
 ############## REST ###################################
 #######################################################
@@ -60,17 +61,17 @@ class RestQuery(Resource):
     def post(self):
         with Connection():
             q = Queue()
-            sourcefile = request.files['sourcefile'].read()
-            sinkfile = request.files['sinkfile'].read()
-            rulesfile = request.files['rulesfile'].read()
+            sourcefile_bytes = request.files['sourcefile'].read()
+            sinkfile_bytes = request.files['sinkfile'].read()
+            rulesfile_bytes = request.files['rulesfile'].read()
             params = json.load(request.files['data'])
             #pass the cache parameters to the rpCofactors object
             scopeCSV = io.BytesIO()
             async_results = q.enqueue(runRetroPath2,
-                                      sinkfile,
-                                      sourcefile,
+                                      sinkfile_bytes,
+                                      sourcefile_bytes,
                                       params['maxSteps'],
-                                      rulesfile,
+                                      rulesfile_bytes,
                                       params['topx'],
                                       params['dmin'],
                                       params['dmax'],

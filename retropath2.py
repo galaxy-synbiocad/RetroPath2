@@ -37,15 +37,25 @@ def limit_virtual_memory():
     resource.setrlimit(resource.RLIMIT_AS, (MAX_VIRTUAL_MEMORY, resource.RLIM_INFINITY))
 
 
-def runRetroPath2(sinkfile, sourcefile, maxSteps, rulesfile=None, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000):
+def runRetroPath2(bytes_sinkfile, bytes_sourcefile, maxSteps, bytes_rulesfile=b'', topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000):
     if not os.path.exists(os.getcwd()+'/tmp'):
         os.mkdir(os.getcwd()+'/tmp')
-    tmpOutputFolder = os.getcwd()+'/tmp/'+''.join(random.choice(string.ascii_lowercase) for i in range(15))
-    os.mkdir(tmpOutputFolder)
-    if rulesfile==None:
+    tmpFolder = os.getcwd()+'/tmp/'+''.join(random.choice(string.ascii_lowercase) for i in range(15))
+    os.mkdir(tmpFolder)
+    sourcefile = tmpfolder+'/source.csv'
+    with open(sourcefile, 'wb') as sourcefi:
+        sourcefi.write(bytes_sourcefile)
+    sinkfile = tmpfolder+'/sink.csv'
+    with open(sinkfile, 'wb') as sinkfi:
+        sinkfi.write(bytes_sinkfile)
+    if rulesfile_bytes==b'':
         #Mac OSX
         rulesfile = 'Users/melchior/Documents/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv'
         #Linux
+    else:
+        rulesfile = tmpFolder+'/rules.csv'
+        with open(rulesfile, 'wb') as rulesfi:
+            rulesfi.write(bytes_rulesfile)
     try:
         knime_command = [KPATH,
                 '-nosplash',
@@ -64,46 +74,37 @@ def runRetroPath2(sinkfile, sourcefile, maxSteps, rulesfile=None, topx=100, dmin
                 '-workflow.variable=output.topx,"'+str(topx)+'",int',
                 '-workflow.variable=output.mwmax-source,"'+str(mwmax_source)+'",int',
                 '-workflow.variable=output.mwmax-cof,"'+str(mwmax_cof)+'",int',
-                '-workflow.variable=output.dir,"'+str(tmpOutputFolder)+'/",String',
+                '-workflow.variable=output.dir,"'+str(tmpFolder)+'/",String',
                 '-workflow.variable=output.solutionfile,"results.csv",String',
                 '-workflow.variable=output.sourceinsinkfile,"source-in-sink.csv",String']
-        #commandObj = subprocess.Popen(knime_command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, shell=False, preexec_fn=limit_virtual_memory)
         commandObj = subprocess.Popen(knime_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, preexec_fn=limit_virtual_memory)
-        #exit_code = subprocess.run(knime_command)
         commandObj.wait()
         (result, error) = commandObj.communicate()
         result = result.decode('utf-8')
         error = error.decode('utf-8')
-        #print('exit_code: '+str(exit_code))
-        """
-        print('####################### result ###########################')
-        print(result)
-        print('####################### error ############################')
-        print(error)
-        """
         if 'There is insufficient memory for the Java Runtime Environment to continue' in result:
             logging.error('RetroPath2.0 does not have sufficient memory to continue')
-            shutil.rmtree(tmpOutputFolder)
+            shutil.rmtree(tmpFolder)
             return b''
     except OSError as e:
         logging.error('Running the RetroPath2.0 Knime program produced an OSError')
         logging.error(e)
-        shutil.rmtree(tmpOutputFolder)
+        shutil.rmtree(tmpFolder)
         return b''
     except ValueError as e:
         logging.error('Cannot set the RAM usage limit')
         logging.error(e)
-        shutil.rmtree(tmpOutputFolder)
+        shutil.rmtree(tmpFolder)
         return b''
     try:
-        csvScope = glob.glob(tmpOutputFolder+'/*_scope.csv')
+        csvScope = glob.glob(tmpFolder+'/*_scope.csv')
         with open(csvScope[0], mode='rb') as scopeFile:
             fileContent = scopeFile.read()
-        shutil.rmtree(tmpOutputFolder)
+        shutil.rmtree(tmpFolder)
         return fileContent
     except IndexError:
         logging.warning('ERROR: RetroPath2.0 has not found any results')
-        shutil.rmtree(tmpOutputFolder)
+        shutil.rmtree(tmpFolder)
         return b''
-    shutil.rmtree(tmpOutputFolder)
+    shutil.rmtree(tmpFolder)
     return b''
