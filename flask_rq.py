@@ -16,7 +16,7 @@ import json
 import time
 from rq import Connection, Queue
 
-from retropath2 import runRetroPath2
+import rp2
 
 
 #######################################################
@@ -60,14 +60,13 @@ class RestApp(Resource):
 class RestQuery(Resource):
     def post(self):
         with Connection():
-            q = Queue()
+            q = Queue(default_timeout=8)
             sourcefile_bytes = request.files['sourcefile'].read()
             sinkfile_bytes = request.files['sinkfile'].read()
             rulesfile_bytes = request.files['rulesfile'].read()
             params = json.load(request.files['data'])
             #pass the cache parameters to the rpCofactors object
-            scopeCSV = io.BytesIO()
-            async_results = q.enqueue(runRetroPath2,
+            async_results = q.enqueue(rp2.run,
                                       sinkfile_bytes,
                                       sourcefile_bytes,
                                       params['maxSteps'],
@@ -81,11 +80,12 @@ class RestQuery(Resource):
             while result is None:
                 result = async_results.return_value
                 time.sleep(2.0)
+            scopeCSV = io.BytesIO()
             scopeCSV.write(result)
             ###### IMPORTANT ######
             scopeCSV.seek(0)
             #######################
-            return send_file(scopeCSV, as_attachment=True, attachment_filename='scope.csv', mimetype='text/csv')
+            return send_file(scopeCSV, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv')
 
 
 api.add_resource(RestApp, '/REST')
