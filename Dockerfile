@@ -81,7 +81,8 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 ENV RETROPATH_VERSION 8
 ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_-_a_retrosynthesis_workflow_with_tutorial_and_example_data-v${RETROPATH_VERSION}.zip
 # NOTE: Update sha256sum for each release
-ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
+#ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
+ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
 
 RUN apt-get --quiet update && \
 	apt-get --quiet --yes dist-upgrade && \
@@ -99,6 +100,7 @@ WORKDIR /home/src/
 
 #copy the rules_rall.tsv
 #COPY cache/rules_rall_rp2.csv /home/src/
+#change to reverse only
 RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall_rp2.tar.gz && \
     tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
     mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/src/rules_rall_rp2.csv && \
