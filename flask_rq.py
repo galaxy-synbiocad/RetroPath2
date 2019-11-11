@@ -60,7 +60,7 @@ class RestApp(Resource):
 class RestQuery(Resource):
     def post(self):
         with Connection():
-            q = Queue(default_timeout=8)
+            q = Queue(default_timeout=300)
             sourcefile_bytes = request.files['sourcefile'].read()
             sinkfile_bytes = request.files['sinkfile'].read()
             rulesfile_bytes = request.files['rulesfile'].read()
@@ -80,6 +80,8 @@ class RestQuery(Resource):
             while result is None:
                 result = async_results.return_value
                 time.sleep(2.0)
+            if result==b'':
+                raise(400)
             scopeCSV = io.BytesIO()
             scopeCSV.write(result)
             ###### IMPORTANT ######
