@@ -78,6 +78,14 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 
 #FROM ibisba/knime-base:3.6.2
 
+##################################################################################
+############################## RP2 and additional ################################
+##################################################################################
+
+RUN apt-get --quiet update && \
+    apt-get --quiet --yes dist-upgrade && \
+    apt-get --quiet --yes install curl
+
 #stable version
 #ENV RETROPATH_VERSION 8
 #new version 
@@ -89,20 +97,6 @@ ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_
 #ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
 #version 9
 ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
-
-##################################################################################
-############################## RP2 and additional ################################
-##################################################################################
-
-RUN apt-get --quiet update && \
-    apt-get --quiet --yes dist-upgrade && \
-    apt-get --quiet --yes install curl && \
-    apt-get --quiet --yes install python-pip && \
-    apt-get --quiet --yes install supervisor
-
-#install rq and redis
-RUN pip install --upgrade pip && \
-    pip install rq redis flask-restful
 
 # Download RetroPath2.0
 WORKDIR /tmp
@@ -119,7 +113,7 @@ WORKDIR /home/src/
 RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall_rp2.tar.gz && \
     tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
     #mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/src/rules_rall_rp2_forward.csv && \
-    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/src/rules_rall_rp2_retro.csv && \
+    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/src/ && \
     rm -r /home/src/retrorules_rr02_rp2_hs && \
     rm /home/src/rules_rall_rp2.tar.gz
 
@@ -135,11 +129,26 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
+RUN apt-get --quiet --yes install supervisor
+
+#install rq and redis
+RUN pip install rq redis flask-restful
+
 COPY rp2.py /home/
 COPY flask_rq.py /home/
 COPY rqworker.conf /home/
 COPY run_worker.py /home/
 COPY start.sh /home/
+
+RUN chmod +x /home/start.sh
+#RUN chmod +x /home/flask_rq.py
+#RUN chmod +x /home/rp2.py
+#RUN chmod +x /home/run_worker.py
+
+RUN chmod 755 /usr/local/knime/knime
+
+#RUN ln -s /usr/local/knime/knime /home/src/knime
+#RUN chmod 775 /home/src/knime
 
 #ENTRYPOINT ["python"]
 #CMD ["/bin/bash", "-c", "supervisord -c /home/rqworker.conf", "python", "/home/flask_rq.py"]
