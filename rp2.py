@@ -26,11 +26,16 @@ import glob
 #RULES_FILE = '/home/src/retrorules_rr02_rp2_flat_retro.csv'
 
 #test server
-KPATH = '/home/mdulac/src/knime_3.6.2/knime'
-RP_WORK_PATH = '/home/mdulac/src/RetroPath2.0.knwf'
-MAX_VIRTUAL_MEMORY = 15000*1024*1024 # 15 GB -- define what is the best
-RULES_FILE = '/home/mdulac/src/retrorules_rr02_rp2_flat_retro.csv'
+#KPATH = '/home/mdulac/src/knime_3.6.2/knime'
+#RP_WORK_PATH = '/home/mdulac/src/RetroPath2.0.knwf'
+#MAX_VIRTUAL_MEMORY = 15000*1024*1024 # 15 GB -- define what is the best
+#RULES_FILE = '/home/mdulac/src/retrorules_rr02_rp2_flat_retro.csv'
 
+#workstation
+KPATH = '/home/mdulac/knime_3.6.1/knime'
+RP_WORK_PATH = '/home/mdulac/Downloads/RetroPath2.0/RetroPath2.0.knwf'
+MAX_VIRTUAL_MEMORY = 15000*1024*1024 # 15 GB -- define what is the best
+RULES_FILE = '/home/mdulac/Downloads/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv'
 
 #RP_WORK_PATH = '/home/src/RetroPath2.0.knwf'
 #Linux
@@ -47,10 +52,9 @@ def limit_virtual_memory():
     resource.setrlimit(resource.RLIMIT_AS, (MAX_VIRTUAL_MEMORY, resource.RLIM_INFINITY))
 
 
-def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000):
+def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30):
     rp2_pathways = b''
     with tempfile.TemporaryDirectory() as tmpfolder:
-        #print('using tmp folder: '+str(tmpfolder))
         #write the input to file
         sourcefile = tmpfolder+'/source.csv'
         with open(sourcefile, 'wb') as sourcefi:
@@ -64,7 +68,6 @@ def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, d
             rulesfile = tmpfolder+'/rules.csv'
             with open(rulesfile, 'wb') as rulesfi:
                 rulesfi.write(rulesfile_bytes)
-            #print('Using tmp writing: '+str(rulesfile))
         try:
             knime_command = [KPATH,
                     '-nosplash',
@@ -86,35 +89,33 @@ def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, d
                     '-workflow.variable=output.dir,"'+str(tmpfolder)+'/",String',
                     '-workflow.variable=output.solutionfile,"results.csv",String',
                     '-workflow.variable=output.sourceinsinkfile,"source-in-sink.csv",String']
-            #print('#################')
-            #print(knime_command)
-            #print('#################')
-            #print('#################')
             commandObj = subprocess.Popen(knime_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, preexec_fn=limit_virtual_memory)
-            commandObj.wait()
+            try:
+                commandObj.wait(timeout=timeout*60.0)
+            except subprocess.TimeoutExpired as e:
+                logging.error('ERROR: Timeout from retropath2.0 ('+str(timeout*60.0)+' seconds)')
+                commandObj.kill()
+                return b'timeout'
             (result, error) = commandObj.communicate()
             result = result.decode('utf-8')
             error = error.decode('utf-8')
-            #print('#################')
-            #print(result)
-            #print('#################')
-            #print('#################')
-            #print(error)
-            #print('#################')
-            #print(glob.glob(tmpfolder+'/*'))
             if 'There is insufficient memory for the Java Runtime Environment to continue' in result:
                 logging.error('RetroPath2.0 does not have sufficient memory to continue')
+                return b'memerror'
             else:
                 try:
                     csvScope = glob.glob(tmpfolder+'/*_scope.csv')
                     with open(csvScope[0], mode='rb') as scopeFile:
                         rp2_pathways = scopeFile.read()
                 except IndexError:
-                    logging.warning('ERROR: RetroPath2.0 has not found any results')
+                    logging.error('ERROR: RetroPath2.0 has not found any results')
+                    return b'noresulterror'
         except OSError as e:
-            logging.error('Running the RetroPath2.0 Knime program produced an OSError')
+            logging.error('ERROR: Running the RetroPath2.0 Knime program produced an OSError')
             logging.error(e)
+            return b'oserror'
         except ValueError as e:
-            logging.error('Cannot set the RAM usage limit')
+            logging.error('ERROR: Cannot set the RAM usage limit')
             logging.error(e)
+            return b'ramerror'
     return rp2_pathways

@@ -118,7 +118,7 @@ WORKDIR /home/src/
 #COPY cache/rules_rall_rp2.csv /home/src/
 RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall_rp2.tar.gz && \
     tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
-    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/src/rules_rall_rp2_forward.csv && \
+    #mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/src/rules_rall_rp2_forward.csv && \
     mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/src/rules_rall_rp2_retro.csv && \
     rm -r /home/src/retrorules_rr02_rp2_hs && \
     rm /home/src/rules_rall_rp2.tar.gz
@@ -137,10 +137,13 @@ org.rdkit.knime.feature.feature.group \
 
 COPY rp2.py /home/
 COPY flask_rq.py /home/
-COPY rq_settings.py /home/
 COPY rqworker.conf /home/
+COPY run_worker.py /home/
+COPY start.sh /home/
 
 #ENTRYPOINT ["python"]
-CMD ["/bin/bash", "-c", "supervisord -c /home/rqworker.conf", "python", "/home/flask_rq.py"]
+#CMD ["/bin/bash", "-c", "supervisord -c /home/rqworker.conf", "python", "/home/flask_rq.py"]
+
+CMD ["/home/start.sh"]
 
 EXPOSE 8991
