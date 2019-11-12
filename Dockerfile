@@ -78,10 +78,20 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 
 #FROM ibisba/knime-base:3.6.2
 
-ENV RETROPATH_VERSION 8
+#stable version
+#ENV RETROPATH_VERSION 8
+#new version 
+ENV RETROPATH_VERSION 9
 ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_-_a_retrosynthesis_workflow_with_tutorial_and_example_data-v${RETROPATH_VERSION}.zip
 # NOTE: Update sha256sum for each release
+<<<<<<< HEAD
 #ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
+=======
+#TODO: update the SHA356 for the new version of RetroPath2
+#version 8
+#ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
+#version 9
+>>>>>>> dev
 ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
 
 RUN apt-get --quiet update && \
@@ -103,7 +113,8 @@ WORKDIR /home/src/
 #change to reverse only
 RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall_rp2.tar.gz && \
     tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
-    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/src/rules_rall_rp2.csv && \
+    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/src/rules_rall_rp2_forward.csv && \
+    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/src/rules_rall_rp2_retro.csv && \
     rm -r /home/src/retrorules_rr02_rp2_hs && \
     rm /home/src/rules_rall_rp2.tar.gz
 
