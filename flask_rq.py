@@ -16,6 +16,10 @@ import json
 import time
 from rq import Connection, Queue
 
+import redis
+import os
+from urllib import parse
+
 import rp2
 
 
@@ -77,9 +81,14 @@ class RestQuery(Resource):
                                       params['mwmax_source'],
                                       params['mwmax_cof'])
             result = None
+            print('######################')
             while result is None:
                 result = async_results.return_value
+                print(result)
                 time.sleep(2.0)
+            print('########### FINAL ############')
+            print(result)
+            print('######################')
             if result==b'':
                 raise(400)
             scopeCSV = io.BytesIO()

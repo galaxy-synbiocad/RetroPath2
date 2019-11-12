@@ -27,9 +27,6 @@ RUN apt-get --purge autoremove -y software-properties-common curl \
 # Install pandas and protobuf so KNIME can communicate with Python
 RUN pip install pandas && pip install protobuf
 
-#install rq and redis
-RUN pip install rq redis
-
 # Install Rserver so KNIME can communicate with R
 RUN R -e 'install.packages(c("Rserve"), repos="http://cran.rstudio.com/")'
 
@@ -93,9 +90,19 @@ ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_
 #version 9
 ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
 
+##################################################################################
+############################## RP2 and additional ################################
+##################################################################################
+
 RUN apt-get --quiet update && \
-	apt-get --quiet --yes dist-upgrade && \
-	apt-get --quiet --yes install curl
+    apt-get --quiet --yes dist-upgrade && \
+    apt-get --quiet --yes install curl && \
+    apt-get --quiet --yes install python-pip && \
+    apt-get --quiet --yes install supervisor
+
+#install rq and redis
+RUN pip install --upgrade pip && \
+    pip install rq redis flask-restful
 
 # Download RetroPath2.0
 WORKDIR /tmp
@@ -128,10 +135,12 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
-#COPY pyKnime.py /home/src/pyKnime.py
-#COPY pyKnime.py /home/src/pyKnime_forward.py
-#RUN chmod 755 /home/src/pyKnime.py
-#RUN chmod 755 /home/src/pyKnime_forward.py
-#RUN chown -R 755 /home/src/data
-#RUN ln -s /home/src/pyKnime.py /usr/bin
-#RUN ln -s /home/src/pyKnime_forward.py /usr/bin
+COPY rp2.py /home/
+COPY flask_rq.py /home/
+COPY rq_settings.py /home/
+COPY rqworker.conf /home/
+
+#ENTRYPOINT ["python"]
+CMD ["/bin/bash", "-c", "supervisord -c /home/rqworker.conf", "python", "/home/flask_rq.py"]
+
+EXPOSE 8991
