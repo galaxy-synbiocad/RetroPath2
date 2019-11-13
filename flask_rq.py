@@ -80,7 +80,6 @@ class RestQuery(Resource):
                                   params['mwmax_cof'],
                                   params['timeout'])
         result = None
-        #failed
         while result is None:
             result = async_results.return_value
             if async_results.get_status()=='failed':
@@ -95,19 +94,16 @@ class RestQuery(Resource):
             scopeCSV.seek(0)
             #######################
             return send_file(scopeCSV, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv')
-        elif result[0]==b'timeout':
+        elif result[1]==b'timeout':
             app.logger.error.error('ERROR: Timeout of RetroPath2.0')
             raise(400)
-        elif result[0]==b'memerror':
+        elif result[1]==b'memoryerror':
             app.logger.error.error('ERROR: Memory allocation error')
             raise(400)
-        elif result[0]==b'noresulterror':
-            app.logger.error.error('ERROR: Could not find any results by RetroPath2.0')
+        elif result[1]==b'oserror':
+            app.logger.error.error('ERROR: rp2paths has generated an OS error')
             raise(400)
-        elif result[0]==b'oserror':
-            app.logger.error.error('ERROR: RetroPath2.0 has generated an OS error')
-            raise(400)
-        elif result[0]==b'ramerror':
+        elif result[1]==b'ramerror':
             app.logger.error.error('ERROR: Could not setup a RAM limit')
             raise(400)
         scopeCSV = io.BytesIO()
