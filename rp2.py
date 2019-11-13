@@ -12,8 +12,8 @@ import os
 import tempfile
 import glob
 
-from rq.decorators import job
-import redis
+#from rq.decorators import job
+#import redis
 
 #DOCKER
 #KPATH = '/home/src/knime'
@@ -52,7 +52,7 @@ RULES_FILE = '/home/mdulac/Downloads/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_
 def limit_virtual_memory():
     resource.setrlimit(resource.RLIMIT_AS, (MAX_VIRTUAL_MEMORY, resource.RLIM_INFINITY))
 
-@job('default', connection=redis.Redis(), timeout='24h')
+#@job('default', connection=redis.Redis(), timeout='24h')
 def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30):
     with tempfile.TemporaryDirectory() as tmpfolder:
         #write the input to file

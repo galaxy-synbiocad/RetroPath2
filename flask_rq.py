@@ -15,10 +15,9 @@ import io
 import logging
 import json
 import time
+
 from rq import Connection, Queue
 import redis
-
-import rq
 
 import rp2
 
@@ -64,7 +63,7 @@ class RestApp(Resource):
 class RestQuery(Resource):
     def post(self):
         app.logger.info('Received job')
-        q = Queue(connection=redis.Redis(), default_timeout='24h') #essentially infinite
+        q = Queue(connection=redis.Redis('localhost', 6379), default_timeout='24h') #essentially infinite
         app.logger.info('Found Queue')
         #q = Queue(default_timeout='24h') #essentially infinite
         sourcefile_bytes = request.files['sourcefile'].read()
@@ -74,7 +73,6 @@ class RestQuery(Resource):
         params = json.load(request.files['data'])
         #pass the cache parameters to the rpCofactors object 
         app.logger.info('Sending job to queue')
-        """
         async_results = q.enqueue(rp2.run,
                                   sinkfile_bytes,
                                   sourcefile_bytes,
@@ -118,6 +116,7 @@ class RestQuery(Resource):
                 raise(400)
                 #logging.error(result[0])
             time.sleep(2.0)
+        """
         if result[0]==b'':
             logging.error('ERROR: Empty results')
             logging.error(result[1])

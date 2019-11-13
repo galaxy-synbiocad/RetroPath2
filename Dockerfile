@@ -139,8 +139,8 @@ RUN pip3 install rq redis flask-restful
 
 RUN apt-get --quiet --yes install tmux vim
 
-COPY rp2.py /home/
 COPY rqworker.conf /home/
+COPY rp2.py /home/
 COPY run_worker.py /home/
 COPY flask_rq.py /home/
 COPY start.sh /home/
