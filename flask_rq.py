@@ -59,10 +59,8 @@ class RestApp(Resource):
 # order to keep the client lighter.
 class RestQuery(Resource):
     def post(self):
-        app.logger.info('Received job')
         conn = Redis()
         q = Queue('default', connection=conn, default_timeout='24h') #essentially infinite
-        app.logger.info('Found Queue')
         #q = Queue(default_timeout='24h') #essentially infinite
         sourcefile_bytes = request.files['sourcefile'].read()
         sinkfile_bytes = request.files['sinkfile'].read()
@@ -70,7 +68,6 @@ class RestQuery(Resource):
         app.logger.info(rulesfile_bytes)
         params = json.load(request.files['data'])
         #pass the cache parameters to the rpCofactors object 
-        app.logger.info('Sending job to queue')
         async_results = q.enqueue(run,
                                   sinkfile_bytes,
                                   sourcefile_bytes,
@@ -84,18 +81,14 @@ class RestQuery(Resource):
                                   params['timeout'])
         result = None
         #failed
-        app.logger.info(async_results.get_status())
         while result is None:
             result = async_results.return_value
-            app.logger.info(async_results.get_status())
-            app.logger.info('######################')
             if async_results.get_status()=='failed':
                 app.logger.error('ERROR: Job failed')
                 raise(400)
-                #logging.error(result[0])
             time.sleep(2.0)
         if result[0]==b'':
-            logging.error('ERROR: Empty results')
+            app.logger.error('ERROR: Empty results')
             logging.error(result[1])
             scopeCSV = io.BytesIO()
             ###### IMPORTANT ######
@@ -103,24 +96,19 @@ class RestQuery(Resource):
             #######################
             return send_file(scopeCSV, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv')
         elif result[0]==b'timeout':
-            logging.error('ERROR: Timeout of RetroPath2.0')
-            logging.error(result[1])
+            app.logger.error.error('ERROR: Timeout of RetroPath2.0')
             raise(400)
         elif result[0]==b'memerror':
-            logging.error('ERROR: Memory allocation error')
-            logging.error(result[1])
+            app.logger.error.error('ERROR: Memory allocation error')
             raise(400)
         elif result[0]==b'noresulterror':
-            logging.error('ERROR: Could not find any results by RetroPath2.0')
-            logging.error(result[1])
+            app.logger.error.error('ERROR: Could not find any results by RetroPath2.0')
             raise(400)
         elif result[0]==b'oserror':
-            logging.error('ERROR: RetroPath2.0 has generated an OS error')
-            logging.error(result[1])
+            app.logger.error.error('ERROR: RetroPath2.0 has generated an OS error')
             raise(400)
         elif result[0]==b'ramerror':
-            logging.error('ERROR: Could not setup a RAM limit')
-            logging.error(result[1])
+            app.logger.error.error('ERROR: Could not setup a RAM limit')
             raise(400)
         scopeCSV = io.BytesIO()
         scopeCSV.write(result[0])
