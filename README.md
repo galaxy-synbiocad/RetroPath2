@@ -3,7 +3,7 @@
 * Docker image: [tbd]
 * Base image: [ibisba/knime-base:3.6.2](https://hub.docker.com/r/ibisba/knime-base)
 
-Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sinl.csv and source.csv. 
+Docker implementation with Flask REST and RQ of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sinl.csv and source.csv. 
 
 ### How to run using Galaxy
 
