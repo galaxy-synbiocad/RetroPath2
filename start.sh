@@ -3,7 +3,5 @@
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
-
-redis-cli flushall
-supervisord -c /home/rqworker.conf &
+supervisord -c /home/supervisor.conf &
 python3 /home/flask_rq.py

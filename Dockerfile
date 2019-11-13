@@ -134,34 +134,17 @@ org.rdkit.knime.feature.feature.group \
 RUN apt-get update
 RUN apt-get --quiet --yes install supervisor redis python3-pip
 
-#install rq and redis
 RUN pip3 install rq redis flask-restful
 
-RUN apt-get --quiet --yes install tmux vim
+WORKDIR /home/
 
-COPY rqworker.conf /home/
 COPY rp2.py /home/
-COPY run_worker.py /home/
+COPY supervisor.conf /home/
 COPY flask_rq.py /home/
 COPY start.sh /home/
 
-COPY source_50_test.csv /home/
-COPY sink_51_test.csv /home/
-
 RUN chmod +x /home/start.sh
-#RUN chmod +x /home/flask_rq.py
-#RUN chmod +x /home/rp2.py
-#RUN chmod +x /home/run_worker.py
 
-#RUN chmod 755 /usr/local/knime/knime
-
-#RUN ln -s /usr/local/knime/knime /home/src/knime
-#RUN chmod 775 /home/src/knime
-
-#ENTRYPOINT ["python"]
-#CMD ["/bin/bash", "-c", "supervisord -c /home/rqworker.conf", "python", "/home/flask_rq.py"]
-
-#CMD ["/home/start.sh"]
-#CMD ["/bin/bash"]
+CMD ["/home/start.sh"]
 
 EXPOSE 8991

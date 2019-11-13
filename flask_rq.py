@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Created on March 5 2019
 
@@ -6,8 +5,6 @@ Created on March 5 2019
 @description: REST+RQ version of RetroPath2.0
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 from datetime import datetime
 from flask import Flask, request, jsonify, send_file, abort
 from flask_restful import Resource, Api
@@ -17,9 +14,9 @@ import json
 import time
 
 from rq import Connection, Queue
-import redis
+from redis import Redis
 
-import rp2
+from rp2 import run
 
 
 #######################################################
@@ -63,7 +60,8 @@ class RestApp(Resource):
 class RestQuery(Resource):
     def post(self):
         app.logger.info('Received job')
-        q = Queue(connection=redis.Redis('localhost', 6379), default_timeout='24h') #essentially infinite
+        conn = Redis()
+        q = Queue('default', connection=conn, default_timeout='24h') #essentially infinite
         app.logger.info('Found Queue')
         #q = Queue(default_timeout='24h') #essentially infinite
         sourcefile_bytes = request.files['sourcefile'].read()
@@ -73,7 +71,7 @@ class RestQuery(Resource):
         params = json.load(request.files['data'])
         #pass the cache parameters to the rpCofactors object 
         app.logger.info('Sending job to queue')
-        async_results = q.enqueue(rp2.run,
+        async_results = q.enqueue(run,
                                   sinkfile_bytes,
                                   sourcefile_bytes,
                                   params['maxSteps'],
@@ -96,27 +94,6 @@ class RestQuery(Resource):
                 raise(400)
                 #logging.error(result[0])
             time.sleep(2.0)
-        """
-		job = rp2.run.delay(sinkfile_bytes,
-                          sourcefile_bytes,
-                          params['maxSteps'],
-                          rulesfile_bytes,
-                          params['topx'],
-                          params['dmin'],
-                          params['dmax'],
-                          params['mwmax_source'],
-                          params['mwmax_cof'],
-                          params['timeout'])
-        result = None
-        while result is None:
-            result = job.result
-            app.logger.info(job.get_status())
-            if job.get_status()=='failed':
-                app.logger.error('ERROR: Job failed')
-                raise(400)
-                #logging.error(result[0])
-            time.sleep(2.0)
-        """
         if result[0]==b'':
             logging.error('ERROR: Empty results')
             logging.error(result[1])

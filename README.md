@@ -28,7 +28,7 @@ docker build -t brsynth/retropath2 .
 It is recommended that one tests the docker using the following commands. First enter the docker in bash using:
 
 ```
-docker run --network host -p 8991:8991 brsynth/retropath2
+docker run -p 8991:8991 brsynth/retropath2
 ```
 
 Once inside the docker in bash, use the following command to call a KNIME job using the example files provided:
