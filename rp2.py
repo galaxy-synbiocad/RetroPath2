@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Created on March 5 2019
 
@@ -6,18 +5,15 @@ Created on March 5 2019
 @description: REST+RQ version of RetroPath2.0
 
 """
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 import subprocess
 import logging
 import resource
-from datetime import datetime
-from flask import Flask, request, jsonify, send_file, abort
-from flask_restful import Resource, Api
-import io
 import os
 import tempfile
 import glob
+
+from rq.decorators import job
+import redis
 
 #DOCKER
 #KPATH = '/home/src/knime'
@@ -56,7 +52,7 @@ RULES_FILE = '/home/mdulac/Downloads/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_
 def limit_virtual_memory():
     resource.setrlimit(resource.RLIMIT_AS, (MAX_VIRTUAL_MEMORY, resource.RLIM_INFINITY))
 
-
+@job('default', connection=redis.Redis(), timeout='24h')
 def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30):
     with tempfile.TemporaryDirectory() as tmpfolder:
         #write the input to file
@@ -73,6 +69,7 @@ def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, d
             with open(rulesfile, 'wb') as rulesfi:
                 rulesfi.write(rulesfile_bytes)
         try:
+            '''
             knime_command = [KPATH,
                     '-nosplash',
                     '-nosave',
@@ -94,13 +91,15 @@ def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, d
                     '-workflow.variable=output.solutionfile,"results.csv",String',
                     '-workflow.variable=output.sourceinsinkfile,"source-in-sink.csv",String']
             commandObj = subprocess.Popen(knime_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, preexec_fn=limit_virtual_memory)
-            #commandObj = subprocess.Popen(knime_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, preexec_fn=limit_virtual_memory)
+            '''
+            knime_command = KPATH+' -nosplash -nosave -reset --launcher.suppressErrors -application org.knime.product.KNIME_BATCH_APPLICATION -workflowFile='+RP_WORK_PATH+' -workflow.variable=input.dmin,"'+str(dmin)+'",int -workflow.variable=input.dmax,"'+str(dmax)+'",int -workflow.variable=input.max-steps,"'+str(maxSteps)+'",int -workflow.variable=input.sourcefile,"'+str(sourcefile)+'",String -workflow.variable=input.sinkfile,"'+str(sinkfile)+'",String -workflow.variable=input.rulesfile,"'+str(rulesfile)+'",String -workflow.variable=output.topx,"'+str(topx)+'",int -workflow.variable=output.mwmax-source,"'+str(mwmax_source)+'",int -workflow.variable=output.mwmax-cof,"'+str(mwmax_cof)+'",int -workflow.variable=output.dir,"'+str(tmpfolder)+'/",String -workflow.variable=output.solutionfile,"results.csv",String -workflow.variable=output.sourceinsinkfile,"source-in-sink.csv",String'
+            commandObj = subprocess.Popen(knime_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, preexec_fn=limit_virtual_memory)
             try:
                 commandObj.wait(timeout=timeout*60.0)
             except subprocess.TimeoutExpired as e:
-                logging.error('ERROR: Timeout from retropath2.0 ('+str(timeout*60.0)+' seconds)')
+                logging.error('ERROR: Timeout from retropath2.0 ('+str(timeout)+' minutes)')
                 commandObj.kill()
-                return b'timeout', str(e)
+                return b'timeout', 'Command: '+str(knime_command)+'\n Error: '+str(e)+'\n tmpfolder: '+str(glob.glob(tmpfolder+'/*'))
             (result, error) = commandObj.communicate()
             result = result.decode('utf-8')
             error = error.decode('utf-8')
@@ -112,15 +111,16 @@ def run(sinkfile_bytes, sourcefile_bytes, maxSteps, rulesfile_bytes, topx=100, d
                     csvScope = glob.glob(tmpfolder+'/*_scope.csv')
                     with open(csvScope[0], mode='rb') as scopeFile:
                         rp2_pathways = scopeFile.read()
+                    return rp2_pathways, ''
                 except IndexError as e:
                     logging.error('ERROR: RetroPath2.0 has not found any results')
-                    return b'noresulterror', str(e)
+                    return b'noresulterror', 'Command: '+str(knime_command)+'\n Error: '+str(e)+'\n tmpfolder: '+str(glob.glob(tmpfolder+'/*'))
         except OSError as e:
             logging.error('ERROR: Running the RetroPath2.0 Knime program produced an OSError')
             logging.error(e)
-            return b'oserror', str(e)
+            return b'oserror', 'Command: '+str(knime_command)+'\n Error: '+str(e)+'\n tmpfolder: '+str(glob.glob(tmpfolder+'/*')) 
         except ValueError as e:
             logging.error('ERROR: Cannot set the RAM usage limit')
             logging.error(e)
-            return b'ramerror', str(e)
+            return b'ramerror', 'Command: '+str(knime_command)+'\n Error: '+str(e)+'\n tmpfolder: '+str(glob.glob(tmpfolder+'/*'))
     return rp2_pathways, ''

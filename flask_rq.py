@@ -18,6 +18,8 @@ import time
 from rq import Connection, Queue
 import redis
 
+import rq
+
 import rp2
 
 
@@ -61,12 +63,18 @@ class RestApp(Resource):
 # order to keep the client lighter.
 class RestQuery(Resource):
     def post(self):
+        app.logger.info('Received job')
         q = Queue(connection=redis.Redis(), default_timeout='24h') #essentially infinite
+        app.logger.info('Found Queue')
+        #q = Queue(default_timeout='24h') #essentially infinite
         sourcefile_bytes = request.files['sourcefile'].read()
         sinkfile_bytes = request.files['sinkfile'].read()
         rulesfile_bytes = request.files['rulesfile'].read()
+        app.logger.info(rulesfile_bytes)
         params = json.load(request.files['data'])
-        #pass the cache parameters to the rpCofactors object
+        #pass the cache parameters to the rpCofactors object 
+        app.logger.info('Sending job to queue')
+        """
         async_results = q.enqueue(rp2.run,
                                   sinkfile_bytes,
                                   sourcefile_bytes,
@@ -79,13 +87,45 @@ class RestQuery(Resource):
                                   params['mwmax_cof'],
                                   params['timeout'])
         result = None
+        #failed
+        app.logger.info(async_results.get_status())
         while result is None:
             result = async_results.return_value
+            app.logger.info(async_results.get_status())
+            app.logger.info('######################')
+            if async_results.get_status()=='failed':
+                app.logger.error('ERROR: Job failed')
+                raise(400)
+                #logging.error(result[0])
+            time.sleep(2.0)
+        """
+		job = rp2.run.delay(sinkfile_bytes,
+                          sourcefile_bytes,
+                          params['maxSteps'],
+                          rulesfile_bytes,
+                          params['topx'],
+                          params['dmin'],
+                          params['dmax'],
+                          params['mwmax_source'],
+                          params['mwmax_cof'],
+                          params['timeout'])
+        result = None
+        while result is None:
+            result = job.result
+            app.logger.info(job.get_status())
+            if job.get_status()=='failed':
+                app.logger.error('ERROR: Job failed')
+                raise(400)
+                #logging.error(result[0])
             time.sleep(2.0)
         if result[0]==b'':
             logging.error('ERROR: Empty results')
             logging.error(result[1])
-            raise(400)
+            scopeCSV = io.BytesIO()
+            ###### IMPORTANT ######
+            scopeCSV.seek(0)
+            #######################
+            return send_file(scopeCSV, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv')
         elif result[0]==b'timeout':
             logging.error('ERROR: Timeout of RetroPath2.0')
             logging.error(result[1])
