@@ -16,7 +16,7 @@ import glob
 #KPATH = '/home/src/knime'
 KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/src/RetroPath2.0.knwf'
-MAX_VIRTUAL_MEMORY = 15000*1024*1024 # 15 GB -- define what is the best
+MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
 RULES_FILE = '/home/src/retrorules_rr02_rp2_flat_retro.csv'
 
 """
