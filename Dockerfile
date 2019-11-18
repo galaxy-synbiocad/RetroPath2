@@ -82,41 +82,6 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 ############################## RP2 and additional ################################
 ##################################################################################
 
-#RUN #apt-get --quiet update && \
-    #apt-get --quiet --yes dist-upgrade && \
-RUN apt-get --quiet --yes install curl
-
-#stable version
-#ENV RETROPATH_VERSION 8
-#new version 
-ENV RETROPATH_VERSION 9
-ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_-_a_retrosynthesis_workflow_with_tutorial_and_example_data-v${RETROPATH_VERSION}.zip
-# NOTE: Update sha256sum for each release
-#TODO: update the SHA356 for the new version of RetroPath2
-#version 8
-#ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
-#version 9
-ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
-
-# Download RetroPath2.0
-WORKDIR /tmp
-RUN echo "$RETROPATH_SHA256 RetroPath2_0.zip" > RetroPath2_0.zip.sha256
-RUN cat RetroPath2_0.zip.sha256
-RUN echo Downloading $RETROPATH_URL
-RUN curl -v -L -o RetroPath2_0.zip $RETROPATH_URL && sha256sum RetroPath2_0.zip && sha256sum -c RetroPath2_0.zip.sha256
-RUN mkdir src && unzip RetroPath2_0.zip && mv RetroPath2.0/* src/
-RUN mv src /home/
-WORKDIR /home/src/
-
-#copy the rules_rall.tsv
-#COPY cache/rules_rall_rp2.csv /home/src/
-RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall_rp2.tar.gz && \
-    tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
-    #mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/src/rules_rall_rp2_forward.csv && \
-    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/src/ && \
-    rm -r /home/src/retrorules_rr02_rp2_hs && \
-    rm /home/src/rules_rall_rp2.tar.gz
-
 #install the additional packages required for running retropath KNIME workflow
 RUN /usr/local/knime/knime -application org.eclipse.equinox.p2.director -nosplash -consolelog \
 -r http://update.knime.org/community-contributions/trunk,\
