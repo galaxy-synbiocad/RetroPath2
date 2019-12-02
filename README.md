@@ -3,7 +3,7 @@
 * Docker image: [tbd]
 * Base image: [ibisba/knime-base:3.6.2](https://hub.docker.com/r/ibisba/knime-base)
 
-Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sinl.csv and source.csv. 
+Docker implementation with Flask REST and RQ of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sinl.csv and source.csv. 
 
 ### How to run using Galaxy
 
@@ -28,7 +28,7 @@ docker build -t brsynth/retropath2 .
 It is recommended that one tests the docker using the following commands. First enter the docker in bash using:
 
 ```
-docker run -it brsynth/retropath2 /bin/bash
+docker run -p 8991:8991 brsynth/retropath2
 ```
 
 Once inside the docker in bash, use the following command to call a KNIME job using the example files provided:
