@@ -67,7 +67,7 @@ class RestQuery(Resource):
         rulesfile_bytes = request.files['rulesfile'].read()
         app.logger.info(rulesfile_bytes)
         params = json.load(request.files['data'])
-        #pass the cache parameters to the rpCofactors object 
+        #pass the cache parameters to the rpCofactors object
         async_results = q.enqueue(run,
                                   sinkfile_bytes,
                                   sourcefile_bytes,
@@ -119,4 +119,4 @@ api.add_resource(RestQuery, '/REST/Query')
 
 
 if __name__== "__main__":
-    app.run(host="0.0.0.0", port=8991, debug=True, threaded=True)
+    app.run(host="0.0.0.0", port=8991, debug=False, threaded=True)
