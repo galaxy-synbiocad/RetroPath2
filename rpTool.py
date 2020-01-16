@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import subprocess
-import sys
 import logging
+
+import sys
+sys.path.insert(0, '/home/src/')
 
 KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/src/RetroPath2.0.knwf'

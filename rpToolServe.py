@@ -8,6 +8,8 @@ import tempfile
 import logging
 import csv
 
+import sys
+sys.path.insert(0, '/home/src/')
 import rpTool
 
 KPATH = '/usr/local/knime/knime'
@@ -39,7 +41,7 @@ def main(source, sink, rules, dmin, dmax, maxSteps, scopeCSV, topx, mwmax_source
     #test to see if there are more than one line (as it stands we only support one source at a time)
     cp_source, fname_source = readCopyFile(source, tmpOutputFolder)
     cp_sink, fname_sink = readCopyFile(sink, tmpOutputFolder)
-    if (rules==rules_path) or (rules==None) or (rules=='None'):
+    if (rules==rules_path) or (rules==None) or (rules=='None') or (rules==''):
         exit_code = rpTool.run_rp2(dmin, dmax, maxSteps, cp_source, cp_sink, rules_path, topx, mwmax_source, mwmax_cof, tmpOutputFolder, float(timeout)*60.0) # input is in minutes and we convert to seconds
     else:
         cp_rules, fname_rules = readCopyFile(rules, tmpOutputFolder)
