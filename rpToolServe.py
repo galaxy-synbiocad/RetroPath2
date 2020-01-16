@@ -16,7 +16,7 @@ import time
 from rq import Connection, Queue
 from redis import Redis
 
-from rpTool import run
+from rpTool import run_rp2
 
 
 #######################################################
@@ -68,7 +68,7 @@ class RestQuery(Resource):
         app.logger.info(rulesfile_bytes)
         params = json.load(request.files['data'])
         #pass the cache parameters to the rpCofactors object
-        async_results = q.enqueue(run,
+        async_results = q.enqueue(run_rp2,
                                   sinkfile_bytes,
                                   sourcefile_bytes,
                                   params['maxSteps'],
@@ -119,4 +119,4 @@ api.add_resource(RestQuery, '/REST/Query')
 
 
 if __name__== "__main__":
-    app.run(host="0.0.0.0", port=8991, debug=False, threaded=True)
+    app.run(host="0.0.0.0", port=8888, debug=False, threaded=True)
