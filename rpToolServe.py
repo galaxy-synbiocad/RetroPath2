@@ -16,7 +16,7 @@ import time
 from rq import Connection, Queue
 from redis import Redis
 
-from rp2 import run
+from rpTool import run
 
 
 #######################################################

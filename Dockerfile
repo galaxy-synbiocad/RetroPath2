@@ -103,13 +103,13 @@ RUN pip3 install rq redis flask-restful
 
 WORKDIR /home/
 
-COPY rp2.py /home/
+COPY rpTool.py /home/
+COPY rpTooServe.py /home/
 COPY supervisor.conf /home/
-COPY flask_rq.py /home/
 COPY start.sh /home/
 
 RUN chmod +x /home/start.sh
 
 CMD ["/home/start.sh"]
 
-EXPOSE 8991
+EXPOSE 8888
