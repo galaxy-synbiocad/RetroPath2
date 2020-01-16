@@ -12,6 +12,9 @@ import argparse
 
 import rpToolServe
 
+#def main(sinkfile, sourcefile, maxSteps, rulesfile, scopeCSV, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30):
+
+
 if __name__ == "__main__":
     #### WARNING: as it stands one can only have a single source molecule
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
@@ -27,14 +30,14 @@ if __name__ == "__main__":
     parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-timeout', type=int)
     params = parser.parse_args()
-    rpToolServe.main(params.sourcefile,
-                    params.sinkfile,
-                    params.rulesfile,
-                    params.dmin,
-                    params.dmax,
+    rpToolServe.main(params.sinkfile,
+                    params.sourcefile,
                     params.maxSteps,
+                    params.rulesfile,
                     params.scope_csv,
                     params.topx,
+                    params.dmin,
+                    params.dmax,
                     params.mwmax_source,
                     params.mwmax_cof,
                     params.timeout)
