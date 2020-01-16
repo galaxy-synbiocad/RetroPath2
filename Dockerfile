@@ -110,6 +110,7 @@ RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall
     tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
     mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/src/rules_rall_rp2_forward.csv && \
     mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/src/rules_rall_rp2_retro.csv && \
+    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/src/rules_rall_rp2.csv && \
     rm -r /home/src/retrorules_rr02_rp2_hs && \
     rm /home/src/rules_rall_rp2.tar.gz
 
@@ -125,10 +126,7 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
-#COPY pyKnime.py /home/src/pyKnime.py
-#COPY pyKnime.py /home/src/pyKnime_forward.py
-#RUN chmod 755 /home/src/pyKnime.py
-#RUN chmod 755 /home/src/pyKnime_forward.py
-#RUN chown -R 755 /home/src/data
-#RUN ln -s /home/src/pyKnime.py /usr/bin
-#RUN ln -s /home/src/pyKnime_forward.py /usr/bin
+RUN alias python=python3
+
+COPY rpTool.py /home/src/
+COPY rpToolServe.py /home/src/
