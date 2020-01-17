@@ -53,6 +53,7 @@ def run_rp2(sinkfile, sourcefile, maxSteps, rulesfile, scopeCSV, tmpOutputFolder
             return b'memerror', 'Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))
         ### if source is in sink
         try:
+            count = 0
             with open(tmpOutputFolder+'/source-in-sink.csv') as f:
                 reader = csv.reader(f, delimiter=',', quotechar='"')
                 for i in reader:

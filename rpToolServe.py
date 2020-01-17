@@ -22,14 +22,14 @@ RULES_PATH = '/home/src/rules_rall_rp2_retro.csv'
 # function that takes the .dat input of a file, opens to be read by python and then writes it to a file to be csv
 #
 def readCopyFile(inputFile, tmpOutputFolder):
-    outputFile = tmpOutputFolder+'/'+inputFile.split('/')[-1].replace('.dat', '')+'.csv'
+    outputFile = tmpOutputFolder+'/'+inputFile.split('/')[-1].replace('.dat', '').replace('.csv', '')+'.csv'
     with open(outputFile, 'w') as outF:
         outCSV = csv.writer(outF, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         with open(inputFile, 'r') as inF:
             inCSV = csv.reader(inF, delimiter=',', quotechar='"')
             for row in inCSV:
                 outCSV.writerow(row)
-    return outputFile, inputFile.split('/')[-1].replace('.dat', '')+'.csv'
+    return outputFile, inputFile.split('/')[-1].replace('.dat', '').replace('.csv', '')+'.csv'
 
 ##
 #
