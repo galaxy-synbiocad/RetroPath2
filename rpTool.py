@@ -110,6 +110,6 @@ def main(sinkfile, sourcefile, maxSteps, rulesfile, scopeCSV, topx=100, dmin=0, 
         else:
             rulesfile, fname_rules = readCopyFile(rulesfile, tmpOutputFolder)
         ### run RetroPath2.0
-        status, errorstring = rpTool.run_rp2(sinkfile, sourcefile, maxSteps, rulesfile, scopeCSV, tmpOutputFolder, topx, dmin, dmax, mwmax_source, mwmax_cof, timeout)
+        status, errorstring = run_rp2(sinkfile, sourcefile, maxSteps, rulesfile, scopeCSV, tmpOutputFolder, topx, dmin, dmax, mwmax_source, mwmax_cof, timeout)
         #if the errors are not detected by Galaxy catch them here
         #logging.error(errorstring)
