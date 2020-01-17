@@ -129,4 +129,3 @@ org.rdkit.knime.feature.feature.group \
 RUN alias python=python3
 
 COPY rpTool.py /home/src/
-COPY rpToolServe.py /home/src/
