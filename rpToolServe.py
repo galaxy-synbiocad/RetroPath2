@@ -13,6 +13,9 @@ import logging
 import json
 import time
 
+from rq import Connection, Queue
+from redis import Redis
+
 import rpTool
 
 from logging.handlers import RotatingFileHandler
