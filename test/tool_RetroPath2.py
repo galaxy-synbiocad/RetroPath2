@@ -7,10 +7,16 @@ Created on September 21 2019
 
 """
 import sys
-sys.path.insert(0, '/home/src/')
+sys.path.insert(0, '/home/')
 import argparse
+import logging
 
 import rpTool
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+#def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes=None, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, logger=None):
 
 
 if __name__ == "__main__":
@@ -28,14 +34,32 @@ if __name__ == "__main__":
     parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-timeout', type=int)
     params = parser.parse_args()
-    rpTool.main(params.sinkfile,
-                params.sourcefile,
-                params.maxSteps,
-                params.rulesfile,
-                params.scope_csv,
-                params.topx,
-                params.dmin,
-                params.dmax,
-                params.mwmax_source,
-                params.mwmax_cof,
-                params.timeout)
+    with open(params.sinkfile, 'rb') as sinkfile_bytes:
+        with open(params.sourcefile, 'rb') as sourcefile_bytes:
+            if (params.rulesfile==None) or (params.rulesfile==b'None') or (params.rulesfile=='None') or (params.rulesfile=='') or (params.rulesfile==b''):
+                result = rpTool.run_rp2(sinkfile_bytes.read(),
+                                        sourcefile_bytes.read(),
+                                        params.maxSteps,
+                                        b'None',
+                                        params.topx,
+                                        params.dmin,
+                                        params.dmax,
+                                        params.mwmax_source,
+                                        params.mwmax_cof,
+                                        params.timeout,
+                                        logger)
+            else:
+                with open(params.rulesfile, 'rb') as rulesfile_bytes:
+                    result = rpTool.run_rp2(sinkfile_bytes.read(),
+                                            sourcefile_bytes.read(),
+                                            params.maxSteps,
+                                            rulesfile_bytes.read(),
+                                            params.topx,
+                                            params.dmin,
+                                            params.dmax,
+                                            params.mwmax_source,
+                                            params.mwmax_cof,
+                                            params.timeout,
+                                            logger)
+            with open(params.scope_csv, 'wb') as s_c:
+                s_c.write(result[0])

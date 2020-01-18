@@ -95,23 +95,21 @@ RUN apt-get --quiet update && \
 	apt-get --quiet --yes install curl
 
 # Download RetroPath2.0
-WORKDIR /tmp
+WORKDIR /home/
 RUN echo "$RETROPATH_SHA256 RetroPath2_0.zip" > RetroPath2_0.zip.sha256
 RUN cat RetroPath2_0.zip.sha256
 RUN echo Downloading $RETROPATH_URL
 RUN curl -v -L -o RetroPath2_0.zip $RETROPATH_URL && sha256sum RetroPath2_0.zip && sha256sum -c RetroPath2_0.zip.sha256
 RUN unzip RetroPath2_0.zip && mv RetroPath2.0/* /home/
-WORKDIR /home/
+RUN rm RetroPath2_0.zip
 
-#copy the rules_rall.tsv
-#COPY cache/rules_rall_rp2.csv /home/src/
-RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/src/rules_rall_rp2.tar.gz && \
-    tar xf /home/src/rules_rall_rp2.tar.gz -C /home/src/ && \
-    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/src/rules_rall_rp2_forward.csv && \
-    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/src/rules_rall_rp2_retro.csv && \
-    mv /home/src/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/src/rules_rall_rp2.csv && \
-    rm -r /home/src/retrorules_rr02_rp2_hs && \
-    rm /home/src/rules_rall_rp2.tar.gz
+RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/rules_rall_rp2.tar.gz && \
+    tar xf /home/rules_rall_rp2.tar.gz -C /home/ && \
+    #mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/rules_rall_rp2_forward.csv && \
+    mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/rules_rall_rp2_retro.csv && \
+    #mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/rules_rall_rp2.csv && \
+    rm -r /home/retrorules_rr02_rp2_hs && \
+    rm /home/rules_rall_rp2.tar.gz
 
 #install the additional packages required for running retropath KNIME workflow
 RUN /usr/local/knime/knime -application org.eclipse.equinox.p2.director -nosplash -consolelog \
