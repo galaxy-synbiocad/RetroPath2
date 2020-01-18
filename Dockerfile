@@ -78,21 +78,7 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 
 #FROM ibisba/knime-base:3.6.2
 
-##################################################################################
-############################## RP2 and additional ################################
-##################################################################################
-
-#install the additional packages required for running retropath KNIME workflow
-RUN /usr/local/knime/knime -application org.eclipse.equinox.p2.director -nosplash -consolelog \
--r http://update.knime.org/community-contributions/trunk,\
-http://update.knime.com/analytics-platform/3.6,\
-http://update.knime.com/community-contributions/trusted/3.6 \
--i org.knime.features.chem.types.feature.group,\
-org.knime.features.datageneration.feature.group,\
-jp.co.infocom.cheminfo.marvin.feature.feature.group,\
-org.knime.features.python.feature.group,\
-org.rdkit.knime.feature.feature.group \
--bundlepool /usr/local/knime/ -d /usr/local/knime/
+############################### JOAN rpData ##############################
 
 #stable version
 #ENV RETROPATH_VERSION 8
@@ -107,8 +93,8 @@ ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_
 ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
 
 RUN apt-get --quiet update && \
-    apt-get --quiet --yes dist-upgrade && \
-    apt-get --quiet --yes install curl
+	apt-get --quiet --yes dist-upgrade && \
+	apt-get --quiet --yes install curl
 
 # Download RetroPath2.0
 WORKDIR /home/
@@ -126,8 +112,20 @@ RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/rules_rall_rp2
     #mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/rules_rall_rp2.csv && \
     rm -r /home/retrorules_rr02_rp2_hs && \
     rm /home/rules_rall_rp2.tar.gz
- 
+
 #####################################################################
+
+#install the additional packages required for running retropath KNIME workflow
+RUN /usr/local/knime/knime -application org.eclipse.equinox.p2.director -nosplash -consolelog \
+-r http://update.knime.org/community-contributions/trunk,\
+http://update.knime.com/analytics-platform/3.6,\
+http://update.knime.com/community-contributions/trusted/3.6 \
+-i org.knime.features.chem.types.feature.group,\
+org.knime.features.datageneration.feature.group,\
+jp.co.infocom.cheminfo.marvin.feature.feature.group,\
+org.knime.features.python.feature.group,\
+org.rdkit.knime.feature.feature.group \
+-bundlepool /usr/local/knime/ -d /usr/local/knime/
 
 ##################### FLASK ###################
 
