@@ -100,9 +100,8 @@ RUN echo "$RETROPATH_SHA256 RetroPath2_0.zip" > RetroPath2_0.zip.sha256
 RUN cat RetroPath2_0.zip.sha256
 RUN echo Downloading $RETROPATH_URL
 RUN curl -v -L -o RetroPath2_0.zip $RETROPATH_URL && sha256sum RetroPath2_0.zip && sha256sum -c RetroPath2_0.zip.sha256
-RUN mkdir src && unzip RetroPath2_0.zip && mv RetroPath2.0/* src/
-RUN mv src /home/
-WORKDIR /home/src/
+RUN unzip RetroPath2_0.zip && mv RetroPath2.0/* /home/
+WORKDIR /home/
 
 #copy the rules_rall.tsv
 #COPY cache/rules_rall_rp2.csv /home/src/
@@ -126,6 +125,4 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
-RUN alias python=python3
-
-COPY rpTool.py /home/src/
+COPY rpTool.py /home/
