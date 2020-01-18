@@ -50,7 +50,7 @@ def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes=b'None', to
             rules_path = RULES_PATH
         else:
             #rulesfile, fname_rules = readCopyFile(rulesfile, tmpOutputFolder)
-            rules_path = tmpOutputFolder+'/tmp_rules'
+            rules_path = tmpOutputFolder+'/tmp_rules.csv'
             with open(rules_path, 'wb') as outfi:
                 outfi.write(rules_bytes)
         ### run the KNIME RETROPATH2.0 workflow
