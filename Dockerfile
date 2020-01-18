@@ -94,6 +94,41 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
+#stable version
+#ENV RETROPATH_VERSION 8
+#new version 
+ENV RETROPATH_VERSION 9
+ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_-_a_retrosynthesis_workflow_with_tutorial_and_example_data-v${RETROPATH_VERSION}.zip
+# NOTE: Update sha256sum for each release
+#TODO: update the SHA356 for the new version of RetroPath2
+#version 8
+#ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
+#version 9
+ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
+
+RUN apt-get --quiet update && \
+    apt-get --quiet --yes dist-upgrade && \
+    apt-get --quiet --yes install curl
+
+# Download RetroPath2.0
+WORKDIR /home/
+RUN echo "$RETROPATH_SHA256 RetroPath2_0.zip" > RetroPath2_0.zip.sha256
+RUN cat RetroPath2_0.zip.sha256
+RUN echo Downloading $RETROPATH_URL
+RUN curl -v -L -o RetroPath2_0.zip $RETROPATH_URL && sha256sum RetroPath2_0.zip && sha256sum -c RetroPath2_0.zip.sha256
+RUN unzip RetroPath2_0.zip && mv RetroPath2.0/* /home/
+RUN rm RetroPath2_0.zip
+
+RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/rules_rall_rp2.tar.gz && \
+    tar xf /home/rules_rall_rp2.tar.gz -C /home/ && \
+    #mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/rules_rall_rp2_forward.csv && \
+    mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/rules_rall_rp2_retro.csv && \
+    #mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/rules_rall_rp2.csv && \
+    rm -r /home/retrorules_rr02_rp2_hs && \
+    rm /home/rules_rall_rp2.tar.gz
+ 
+#####################################################################
+
 ##################### FLASK ###################
 
 RUN apt-get update
