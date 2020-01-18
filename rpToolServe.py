@@ -6,7 +6,7 @@ Created on March 5 2019
 
 """
 from datetime import datetime
-from flask import Flask, request, jsonify, send_file, abort
+from flask import Flask, request, jsonify, send_file, abort, Response
 from flask_restful import Resource, Api
 import io
 import logging
@@ -15,6 +15,7 @@ import time
 
 import rpTool
 
+from logging.handlers import RotatingFileHandler
 
 #######################################################
 ############## REST ###################################
@@ -61,17 +62,16 @@ class RestQuery(Resource):
         rulesfile_bytes = request.files['rulesfile'].read()
         params = json.load(request.files['data'])
         #pass the cache parameters to the rpCofactors object
-        result = rpTool.run_rp2paths(rpTool.run_rp2,
-                                     sinkfile_bytes,
-                                     sourcefile_bytes,
-                                     params['maxSteps'],
-                                     rulesfile_bytes,
-                                     params['topx'],
-                                     params['dmin'],
-                                     params['dmax'],
-                                     params['mwmax_source'],
-                                     params['mwmax_cof'],
-                                     params['timeout'])
+        result = rpTool.run_rp2(sinkfile_bytes,
+                                sourcefile_bytes,
+                                params['maxSteps'],
+                                rulesfile_bytes,
+                                params['topx'],
+                                params['dmin'],
+                                params['dmax'],
+                                params['mwmax_source'],
+                                params['mwmax_cof'],
+                                params['timeout'])
         if result[0]==b'':
             app.logger.error('Empty results')
             return Response("Empty results \n"+str(result[2]), status=400)

@@ -96,12 +96,15 @@ org.rdkit.knime.feature.feature.group \
 
 ##################### FLASK ###################
 
-RUN conda install -c conda-forge flask-restful
+RUN apt-get update
+RUN apt-get --quiet --yes install python3-pip
+
+RUN pip3 install flask-restful
 
 WORKDIR /home/
 
 COPY rpTool.py /home/
-COPY rpTooServe.py /home/
+COPY rpToolServe.py /home/
 
 ENTRYPOINT ["python3"]
 CMD ["/home/rpToolServe.py"]
