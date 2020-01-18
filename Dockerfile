@@ -78,6 +78,8 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 
 #FROM ibisba/knime-base:3.6.2
 
+############################### JOAN rpData ##############################
+
 #stable version
 #ENV RETROPATH_VERSION 8
 #new version 
@@ -110,6 +112,8 @@ RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/rules_rall_rp2
     #mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/rules_rall_rp2.csv && \
     rm -r /home/retrorules_rr02_rp2_hs && \
     rm /home/rules_rall_rp2.tar.gz
+
+#####################################################################
 
 #install the additional packages required for running retropath KNIME workflow
 RUN /usr/local/knime/knime -application org.eclipse.equinox.p2.director -nosplash -consolelog \
