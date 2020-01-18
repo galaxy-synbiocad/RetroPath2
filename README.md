@@ -22,13 +22,13 @@ sudo service docker restart
 We will cover calling RetroPath2.0 using Galaxy where the docker is installed locally and when the docker is remotely located using the Pulsar package. In both cases one needs to build the docker using the following command:
 
 ```
-docker build -t brsynth/retropath2 .
+docker build -t brsynth/retropath2-rest .
 ```
 
 It is recommended that one tests the docker using the following commands. First enter the docker in bash using:
 
 ```
-docker run -p 8991:8991 brsynth/retropath2
+docker run -p 8888:8888 brsynth/retropath2
 ```
 
 Once inside the docker in bash, use the following command to call a KNIME job using the example files provided:

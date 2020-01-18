@@ -94,22 +94,17 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
-##################### REDIS + FLASK ###################
+##################### FLASK ###################
 
-RUN apt-get update
-RUN apt-get --quiet --yes install supervisor redis python3-pip
-
-RUN pip3 install rq redis flask-restful
+RUN conda install -c conda-forge flask-restful
 
 WORKDIR /home/
 
 COPY rpTool.py /home/
 COPY rpTooServe.py /home/
-COPY supervisor.conf /home/
-COPY start.sh /home/
 
-RUN chmod +x /home/start.sh
+ENTRYPOINT ["python3"]
+CMD ["/home/rpToolServe.py"]
 
-CMD ["/home/start.sh"]
-
+# Open server port
 EXPOSE 8888
