@@ -61,8 +61,12 @@ class RestQuery(Resource):
         sinkfile_bytes = request.files['sinkfile'].read()
         rulesfile_bytes = request.files['rulesfile'].read()
         params = json.load(request.files['data'])
+        ##### REDIS ##############
+        conn = Redis()
+        q = Queue('default', connection=conn, default_timeout='24h')
         #pass the cache parameters to the rpCofactors object
-        result = rpTool.run_rp2(sinkfile_bytes,
+        async_results = q.enqueue(rpTool.run_rp2,
+				sinkfile_bytes,
                                 sourcefile_bytes,
                                 params['maxSteps'],
                                 rulesfile_bytes,
@@ -72,6 +76,13 @@ class RestQuery(Resource):
                                 params['mwmax_source'],
                                 params['mwmax_cof'],
                                 params['timeout'])
+        result = None
+        while result is None:
+            result = async_results.return_value
+            if async_results.get_status()=='failed':
+                return Response('Job failed \n '+str(result), status=400)
+            time.sleep(2.0)
+        ########################### 
         if result[0]==b'':
             app.logger.error('Empty results')
             return Response("Empty results \n"+str(result[2]), status=400)

@@ -134,13 +134,21 @@ RUN apt-get --quiet --yes install python3-pip
 
 RUN pip3 install flask-restful
 
+###### REDIS ######
+
+RUN apt-get --quiet --yes install supervisor redis-server
+RUN conda install -c anaconda redis
+RUN conda install -c conda-forge rq
+
+###### Files ####
+
 WORKDIR /home/
 
 COPY rpTool.py /home/
 COPY rpToolServe.py /home/
 
-ENTRYPOINT ["python3"]
-CMD ["/home/rpToolServe.py"]
+RUN chmod +x /home/start.sh
+CMD ["/home/start.sh"]
 
 # Open server port
 EXPOSE 8888
