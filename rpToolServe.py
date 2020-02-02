@@ -69,7 +69,7 @@ class RestQuery(Resource):
         q = Queue('default', connection=conn, default_timeout='24h')
         #pass the cache parameters to the rpCofactors object
         async_results = q.enqueue(rpTool.run_rp2,
-				sinkfile_bytes,
+                                sinkfile_bytes,
                                 sourcefile_bytes,
                                 params['maxSteps'],
                                 rulesfile_bytes,
