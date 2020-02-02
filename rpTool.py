@@ -18,9 +18,9 @@ import tempfile
 
 KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/RetroPath2.0.knwf'
-MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
+MAX_VIRTUAL_MEMORY = 20000*1024*1024 # 20 GB -- define what is the best
 RULES_PATH = '/home/rules_rall_rp2_retro.csv'
-
+RULES_PATH_FORWARD = '/home/retrorules_rr02_rp2_flat_forward.csv'
 
 ##
 #
@@ -32,7 +32,9 @@ def limit_virtual_memory():
 ##
 #
 #
-def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes=b'None', topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, logger=None):
+def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes=b'None', topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, is_forward=False, logger=None):
+    print(is_forward)
+    print(type(is_forward))
     if logger==None:
         logging.basicConfig(level=logging.DEBUG)
         logger = logging.getLogger(__name__)
@@ -47,7 +49,10 @@ def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes=b'None', to
         #sourcefile, fname_source = readCopyFile(sourcefile, tmpOutputFolder)
         #sinkfile, fname_sink = readCopyFile(sinkfile, tmpOutputFolder)
         if (rules_bytes==None) or (rules_bytes==b'None') or (rules_bytes=='None') or (rules_bytes=='') or (rules_bytes==b''):
-            rules_path = RULES_PATH
+            if is_forward:
+                rules_path = RULES_PATH_FORWARD
+            else:
+                rules_path = RULES_PATH
         else:
             #rulesfile, fname_rules = readCopyFile(rulesfile, tmpOutputFolder)
             rules_path = tmpOutputFolder+'/tmp_rules.csv'
@@ -69,7 +74,7 @@ def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes=b'None', to
             ### if java has an memory issue
             if 'There is insufficient memory for the Java Runtime Environment to continue' in result:
                 logger.error('RetroPath2.0 does not have sufficient memory to continue')
-                return b'', b'memerror', 'Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))
+                return b'', b'memerror', 'Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))
             ### if source is in sink
             try:
                 count = 0
@@ -79,7 +84,7 @@ def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes=b'None', to
                         count += 1
                 if count>1:
                     logger.error('Source has been found in the sink')
-                    return b'', b'sourceinsinkerror', 'Command: '+str(knime_command)+'\n Error: '+str(e)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))
+                    return b'', b'sourceinsinkerror', 'Command: '+str(knime_command)+'\n Error: Source found in sink\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))
             except FileNotFoundError as e:
                 logger.error('Cannot find source-in-sink.csv file')
                 logger.error(e)

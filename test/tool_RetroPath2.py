@@ -32,6 +32,7 @@ if __name__ == "__main__":
     parser.add_argument('-mwmax_source', type=int)
     parser.add_argument('-mwmax_cof', type=int)
     parser.add_argument('-scope_csv', type=str)
+    parser.add_argument('-is_forward', type=bool)
     parser.add_argument('-timeout', type=int)
     params = parser.parse_args()
     with open(params.sinkfile, 'rb') as sinkfile_bytes:
@@ -47,6 +48,7 @@ if __name__ == "__main__":
                                         params.mwmax_source,
                                         params.mwmax_cof,
                                         params.timeout,
+                                        params.is_forward,
                                         logger)
             else:
                 with open(params.rulesfile, 'rb') as rulesfile_bytes:
@@ -60,6 +62,7 @@ if __name__ == "__main__":
                                             params.mwmax_source,
                                             params.mwmax_cof,
                                             params.timeout,
+                                            params.is_forward,
                                             logger)
             with open(params.scope_csv, 'wb') as s_c:
                 s_c.write(result[0])
