@@ -26,15 +26,17 @@ def retropathUpload(sinkfile,
                     mwmax_cof,
                     server_url,
                     scope_csv,
-                    timeout):
+                    timeout,
+                    is_forward):
     # Post request
-    data = {'maxSteps': maxSteps,
+    data = {'max_steps': max_steps,
             'topx': topx,
             'dmin': dmin,
             'dmax': dmax,
             'mwmax_source': mwmax_source,
             'mwmax_cof': mwmax_cof,
-            'timeout': timeout}
+            'timeout': timeout,
+            'is_forward': is_forward}
     if rulesfile==None or rulesfile=='' or rulesfile==b'' or rulesfile=='None':
         rulesfile = os.getcwd()+'/empty_file.csv'
         with open(rulesfile, 'wb') as ef:
@@ -62,7 +64,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser('Python wrapper to run RetroPath2.0')
     parser.add_argument('-sinkfile', type=str)
     parser.add_argument('-sourcefile', type=str)
-    parser.add_argument('-maxSteps', type=int)
+    parser.add_argument('-max_steps', type=int)
     parser.add_argument('-rulesfile', type=str)
     parser.add_argument('-topx', type=int)
     parser.add_argument('-dmin', type=int)
@@ -72,10 +74,11 @@ if __name__ == "__main__":
     parser.add_argument('-server_url', type=str)
     parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-timeout', type=int)
+    parser.add_argument('-is_forward', type=bool)
     params = parser.parse_args()
     retropathUpload(params.sinkfile,
                     params.sourcefile,
-                    params.maxSteps,
+                    params.max_steps,
                     params.rulesfile,
                     params.topx,
                     params.dmin,
@@ -84,5 +87,5 @@ if __name__ == "__main__":
                     params.mwmax_cof,
                     params.server_url,
                     params.scope_csv,
-                    params.timeout)
-
+                    params.timeout,
+                    params.is_forward)
