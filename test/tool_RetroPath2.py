@@ -17,7 +17,7 @@ import logging
 #
 def retropathUpload(sinkfile,
                     sourcefile,
-                    maxSteps,
+                    max_steps,
                     rulesfile,
                     topx,
                     dmin,
@@ -28,6 +28,14 @@ def retropathUpload(sinkfile,
                     scope_csv,
                     timeout,
                     is_forward):
+    if is_forward=='False' or is_forward=='false' or is_forward==False:
+        isForward = False
+    elif is_forward=='True' or is_forward=='true' or is_forward==True:
+        isForward = True
+    if rulesfile==None or rulesfile=='' or rulesfile==b'' or rulesfile=='None':
+        rulesfile = os.getcwd()+'/empty_file.csv'
+        with open(rulesfile, 'wb') as ef:
+            ef.write(b'')
     # Post request
     data = {'max_steps': max_steps,
             'topx': topx,
@@ -36,11 +44,7 @@ def retropathUpload(sinkfile,
             'mwmax_source': mwmax_source,
             'mwmax_cof': mwmax_cof,
             'timeout': timeout,
-            'is_forward': is_forward}
-    if rulesfile==None or rulesfile=='' or rulesfile==b'' or rulesfile=='None':
-        rulesfile = os.getcwd()+'/empty_file.csv'
-        with open(rulesfile, 'wb') as ef:
-            ef.write(b'')
+            'is_forward': isForward}
     files = {'sinkfile': open(sinkfile, 'rb'),
             'sourcefile': open(sourcefile, 'rb'),
             'rulesfile': open(rulesfile, 'rb'),
@@ -74,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('-server_url', type=str)
     parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-timeout', type=int)
-    parser.add_argument('-is_forward', type=bool)
+    parser.add_argument('-is_forward', type=str)
     params = parser.parse_args()
     retropathUpload(params.sinkfile,
                     params.sourcefile,

@@ -71,15 +71,15 @@ class RestQuery(Resource):
         async_results = q.enqueue(rpTool.run_rp2,
                                 sinkfile_bytes,
                                 sourcefile_bytes,
-                                params['maxSteps'],
+                                int(params['max_steps']),
                                 rulesfile_bytes,
-                                params['topx'],
-                                params['dmin'],
-                                params['dmax'],
-                                params['mwmax_source'],
-                                params['mwmax_cof'],
-                                params['timeout'],
-                                params['is_forward'])
+                                int(params['topx']),
+                                int(params['dmin']),
+                                int(params['dmax']),
+                                int(params['mwmax_source']),
+                                int(params['mwmax_cof']),
+                                int(params['timeout']),
+                                bool(params['is_forward']))
         result = None
         while result is None:
             result = async_results.return_value
