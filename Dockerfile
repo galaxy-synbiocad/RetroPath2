@@ -128,8 +128,3 @@ org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
 COPY rpTool.py /home/
-
-
-COPY test/test_input_sink.dat /home/
-COPY test/test_input_source.dat /home/
-COPY test/tool_RetroPath2.py /home/
