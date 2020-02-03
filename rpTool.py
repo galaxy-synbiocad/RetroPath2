@@ -20,7 +20,7 @@ KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/RetroPath2.0.knwf'
 MAX_VIRTUAL_MEMORY = 20000*1024*1024 # 20 GB -- define what is the best
 RULES_PATH = '/home/rules_rall_rp2_retro.csv'
-RULES_PATH_FORWARD = '/home/retrorules_rr02_rp2_flat_forward.csv'
+RULES_PATH_FORWARD = '/home/rules_rall_rp2_forward.csv'
 
 ##
 #
