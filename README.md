@@ -1,91 +1,43 @@
-# Galaxy Retropath2.0
+# Retropath2.0
 
-Docker implementation with Flask REST, RQ and Redis of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sinl.csv and source.csv. 
+Build a reaction network from a set of source compounds to a set of sink compounds. Docker implementation with Flask REST, RQ and Redis of the KNIME retropath2.0 workflow. 
+
+## Information Flow
+
+### Input
+
+Required information:
+    * A list of sink molecules in the form of a CSV file (Can use "sink from SBML" node).
+    * A source molecule also in the form of a CSV file (Can use "Make source" node).
+    * An integer determining the maximal pathway length. 
+
+Advanced options: 
+    * Rules file: (optional) An input CSV file with the collections of reaction rules. The default are the rules from RetroPath2.0
+    * TopX: (default 100) The maximal number of pathways to retain for each new iteration
+    * Minimum rule diameter: (default: 0) Given a reaction rule, set the lower bound promiscuity
+    * Maximaum rule diameter: (default: 1000) Given a reaction rule, set the upper bound promiscuity
+    * mwmax source: (default: 1000)
+    * mwmax cof: (default: 1000)
+    * Server URL: Give the address of the REST service
+    * Timemout: (default: 30 min) Limit the execution time of the tool
+    * Run in forward direction: (default: No)
+
+### Output
+
+* RetroPath Pathways: describes the heterologous pathways calculated to produce a target molecule of interest (Source) with a complete description of the structures of the product and subtrates as well as the reaction rules applied to it. 
 
 ## Installing
 
-### How to run using Galaxy
+Compile the docker image if it hasen't already been done:
 
 ```
-sudo groupadd docker
-sudo gpasswd -a $USER docker
-sudo service docker restart
+docker build -t brsynth/retropath2-redis:dev .
 ```
 
-We will cover calling RetroPath2.0 using Galaxy where the docker is installed locally and when the docker is remotely located using the Pulsar package. In both cases one needs to build the docker using the following command:
-
-```
-docker build -t brsynth/retropath2-redis .
-```
-
-It is recommended that one tests the docker using the following commands. First enter the docker in bash using:
+To run the service on a localhost as the Galaxy interface, after creating the image run the REST service using the following command:
 
 ```
 docker run -p 8888:8888 brsynth/retropath2
-```
-
-The pyKnime.py script will write the output files in the "outDir" as well as locally as named using the NEW keyword. This is required to make the docker compatible with the manner by which Galaxy requires the data to be returned to it.
-
-### Local docker
-
-If one has the docker and the Galaxy services on the same machine, then the following Galaxy configurations are required to make them run. 
-
-##### Add the tool to Galaxy's tool_conf.xml
-
-Create a new section in the Galaxy tool_conf.xml
-
-```
-<section id="retro" name="Retro Nodes">
-  <tool file="/local/path/retroPath_galaxy.xml" />
-</section>
-```
-
-##### Modify the job_conf.xml
-
-```
-<?xml version="1.0"?>
-<job_conf>
-  <plugins>
-    <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="4"/>
-  </plugins>
-  <destinations default="docker_local">
-    <destination id="local" runner="local" />
-    <destination id="docker_local" runner="local">
-      <param id="docker_enabled">true</param>
-      <param id="docker_sudo">false</param>
-      <param id="docker_auto_rm">true</param>
-      <param id="docker_set_user">root</param>
-    </destination>
-  </destinations>
-</job_conf>
-```
-
-It is important to run the docker as root user since we will be calling a script that writes files to a temporary folder inside the docker before sending bask to Galaxy
-
-### Pulsar docker call
-
-To run the tool on a remote server and call it using any Galaxy instance, we need to install and configure Pulsar and the docker of the tool
-
-##### Add the tool your LOCAL Galaxy's tool_conf.xml
-
-```
-<section id="retro" name="Retro Nodes">
-  <tool file="/local/path/retroPath_galaxy.xml" />
-</section>
-```
-
-## Running
-
-### Example Input
-
-TODO
-
-### Example Docker Run
-
-Once inside the docker in bash, use the following command to call a KNIME job using the example files provided:
-
-```
-pyKnime.py -source "/home/src/tutorial_data/carotene/source.csv" -sink "/home/src/tutorial_data/carotene/sink.csv" -rules "/home/src/tutorial_data/carotene/rules.csv" -dmin 0 -dmax 1000 -maxSteps 5 -outDir "/home/src/data" -results "NEWresults.csv" -sourceinsink "NEWsource-in-sink.csv" -scopeJSON "NEWscope.json" -scopeCSV "NEWscope.csv"
 ```
 
 ## Built With
@@ -116,6 +68,6 @@ Version 0.1
 
 * Joan Hérisson
 
-### Cite
+### How to cite RetroPath2.0?
 
 Delépine B, Duigou T, Carbonell P, Faulon JL. RetroPath2.0: A retrosynthesis workflow for metabolic engineers. Metabolic Engineering, 45: 158-170, 2018. DOI: https://doi.org/10.1016/j.ymben.2017.12.002
