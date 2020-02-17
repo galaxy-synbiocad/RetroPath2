@@ -7,20 +7,20 @@ Build a reaction network from a set of source compounds to a set of sink compoun
 ### Input
 
 Required information:
-    * A list of sink molecules in the form of a CSV file (Can use "sink from SBML" node).
-    * A source molecule also in the form of a CSV file (Can use "Make source" node).
-    * An integer determining the maximal pathway length. 
+* A list of sink molecules in the form of a CSV file (Can use "sink from SBML" node).
+* A source molecule also in the form of a CSV file (Can use "Make source" node).
+* An integer determining the maximal pathway length. 
 
 Advanced options: 
-    * Rules file: (optional) An input CSV file with the collections of reaction rules. The default are the rules from RetroPath2.0
-    * TopX: (default 100) The maximal number of pathways to retain for each new iteration
-    * Minimum rule diameter: (default: 0) Given a reaction rule, set the lower bound promiscuity
-    * Maximaum rule diameter: (default: 1000) Given a reaction rule, set the upper bound promiscuity
-    * mwmax source: (default: 1000)
-    * mwmax cof: (default: 1000)
-    * Server URL: Give the address of the REST service
-    * Timemout: (default: 30 min) Limit the execution time of the tool
-    * Run in forward direction: (default: No)
+* Rules file: (optional) An input CSV file with the collections of reaction rules. The default are the rules from RetroPath2.0
+* TopX: (default 100) The maximal number of pathways to retain for each new iteration
+* Minimum rule diameter: (default: 0) Given a reaction rule, set the lower bound promiscuity
+* Maximaum rule diameter: (default: 1000) Given a reaction rule, set the upper bound promiscuity
+* mwmax source: (default: 1000)
+* mwmax cof: (default: 1000)
+* Server URL: Give the address of the REST service
+* Timemout: (default: 30 min) Limit the execution time of the tool
+* Run in forward direction: (default: No)
 
 ### Output
 
