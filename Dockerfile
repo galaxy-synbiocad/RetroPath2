@@ -105,14 +105,6 @@ RUN curl -v -L -o RetroPath2_0.zip $RETROPATH_URL && sha256sum RetroPath2_0.zip 
 RUN unzip RetroPath2_0.zip && mv RetroPath2.0/* /home/
 RUN rm RetroPath2_0.zip
 
-RUN wget https://retrorules.org/dl/preparsed/rr02/rp2/hs -O /home/rules_rall_rp2.tar.gz && \
-    tar xf /home/rules_rall_rp2.tar.gz -C /home/ && \
-    mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_forward.csv /home/rules_rall_rp2_forward.csv && \
-    mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_retro.csv /home/rules_rall_rp2_retro.csv && \
-    #mv /home/retrorules_rr02_rp2_hs/retrorules_rr02_rp2_flat_all.csv /home/rules_rall_rp2.csv && \
-    rm -r /home/retrorules_rr02_rp2_hs && \
-    rm /home/rules_rall_rp2.tar.gz
-
 #####################################################################
 
 #install the additional packages required for running retropath KNIME workflow

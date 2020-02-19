@@ -78,8 +78,7 @@ class RestQuery(Resource):
                                 int(params['dmax']),
                                 int(params['mwmax_source']),
                                 int(params['mwmax_cof']),
-                                int(params['timeout']),
-                                bool(params['is_forward']))
+                                int(params['timeout']))
         result = None
         while result is None:
             result = async_results.return_value
