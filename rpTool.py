@@ -14,7 +14,7 @@ import csv
 import glob
 import resource
 import tempfile
-
+import shutil
 
 KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/RetroPath2.0.knwf'
@@ -30,21 +30,17 @@ def limit_virtual_memory():
 ##
 #
 #
-def run_rp2(sinkfile_bytes, sourcefile_bytes, max_steps, rules_bytes, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, is_forward=False, logger=None):
+def run_rp2(sourcefile, sinkfile, rulesfile, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, logger=None):
     if logger==None:
         logging.basicConfig(level=logging.DEBUG)
         logger = logging.getLogger(__name__)
     with tempfile.TemporaryDirectory() as tmpOutputFolder:
         sink_path = tmpOutputFolder+'/tmp_sink.csv'
-        with open(sink_path, 'wb') as outfi:
-            outfi.write(sinkfile_bytes)
+        shutil.copy(sinkfile, sink_path)
         source_path = tmpOutputFolder+'/tmp_source.csv'
-        with open(source_path, 'wb') as outfi:
-            outfi.write(sourcefile_bytes)
-        #rulesfile, fname_rules = readCopyFile(rulesfile, tmpOutputFolder)
+        shutil.copy(sourcefile, source_path)
         rules_path = tmpOutputFolder+'/tmp_rules.csv'
-        with open(rules_path, 'wb') as outfi:
-            outfi.write(rules_bytes)
+        shutil.copy(rulesfile, rules_path)
         ### run the KNIME RETROPATH2.0 workflow
         try:
             knime_command = KPATH+' -nosplash -nosave -reset --launcher.suppressErrors -application org.knime.product.KNIME_BATCH_APPLICATION -workflowFile='+RP_WORK_PATH+' -workflow.variable=input.dmin,"'+str(dmin)+'",int -workflow.variable=input.dmax,"'+str(dmax)+'",int -workflow.variable=input.max-steps,"'+str(max_steps)+'",int -workflow.variable=input.sourcefile,"'+str(source_path)+'",String -workflow.variable=input.sinkfile,"'+str(sink_path)+'",String -workflow.variable=input.rulesfile,"'+str(rules_path)+'",String -workflow.variable=output.topx,"'+str(topx)+'",int -workflow.variable=output.mwmax-source,"'+str(mwmax_source)+'",int -workflow.variable=output.mwmax-cof,"'+str(mwmax_cof)+'",int -workflow.variable=output.dir,"'+str(tmpOutputFolder)+'/",String -workflow.variable=output.solutionfile,"results.csv",String -workflow.variable=output.sourceinsinkfile,"source-in-sink.csv",String'
