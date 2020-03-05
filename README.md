@@ -28,16 +28,14 @@ docker build -t brsynth/retropath2-standalone:dev .
 It is recommended that one tests the docker using the following commands. First enter the docker in bash using:
 
 ```
-docker run -it brsynth/retropath2 /bin/bash
+docker run -it brsynth/retropath2-standalone:dev /bin/bash
 ```
 
-Once inside the docker in bash, use the following command to call a KNIME job using the example files provided:
+To test the docker, run the following command:
 
 ```
-pyKnime.py -source "/home/src/tutorial_data/carotene/source.csv" -sink "/home/src/tutorial_data/carotene/sink.csv" -rules "/home/src/tutorial_data/carotene/rules.csv" -dmin 0 -dmax 1000 -maxSteps 5 -outDir "/home/src/data" -results "NEWresults.csv" -sourceinsink "NEWsource-in-sink.csv" -scopeJSON "NEWscope.json" -scopeCSV "NEWscope.csv"
+python run.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
 ```
-
-The pyKnime.py script will write the output files in the "outDir" as well as locally as named using the NEW keyword. This is required to make the docker compatible with the manner by which Galaxy requires the data to be returned to it.
 
 ### Local docker
 

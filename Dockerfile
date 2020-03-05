@@ -120,3 +120,10 @@ org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
 COPY rpTool.py /home/
+COPY tool_RetroPath2.py /home/
+
+#debug
+#RUN mkdir /home/tmp_output/
+#COPY test/sink.csv /home/tmp_output/
+#COPY test/source.csv /home/tmp_output/
+#COPY test/rules.tar /home/tmp_output/rules.dat
