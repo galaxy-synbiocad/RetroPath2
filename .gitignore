@@ -1,4 +1,4 @@
 *.swp
-.Dockerfile.swp
-__pycache__/
+.Dockerfile.swpzz
 test/
+__pycache__/

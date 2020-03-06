@@ -75,7 +75,7 @@ def main(sinkfile,
                 auto_remove=True, 
                 detach=False, 
                 volumes={tmpOutputFolder+'/': {'bind': '/home/tmp_output', 'mode': 'rw'}})
-        shutil.copy(tmpOutputFolder+'/output.dat', os.getcwd()+'/'+scope_csv)
+        shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
 
 
 ##
