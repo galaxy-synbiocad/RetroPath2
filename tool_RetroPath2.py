@@ -62,15 +62,15 @@ if __name__ == "__main__":
                                 params.mwmax_source,
                                 params.mwmax_cof,
                                 params.timeout)
-        if result[0]==b'':
-            logging.error('Empty results')
-        elif result[1]==b'timeout':
-            logging.error.error('Timeout of RetroPath2.0')
+        if result[1]==b'timeout':
+            logging.error('Timeout of RetroPath2.0')
         elif result[1]==b'memoryerror':
-            logging.error.error('Memory allocation error')
+            logging.error('Memory allocation error')
         elif result[1]==b'oserror':
-            logging.error.error('rp2paths has generated an OS error')
+            logging.error('rp2paths has generated an OS error')
         elif result[1]==b'ramerror':
             logging.error.error('Could not setup a RAM limit')
+        elif result[0]==b'':
+            logging.error('Empty results')
         with open(params.scope_csv, 'wb') as scope_csv:
             scope_csv.write(result[0])
