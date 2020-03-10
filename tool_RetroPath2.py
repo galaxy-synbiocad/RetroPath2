@@ -16,6 +16,8 @@ import glob
 sys.path.insert(0, '/home/')
 import rpTool
 
+#def run_rp2(sourcefile, sinkfile, rulesfile, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, logger=None):
+
 if __name__ == "__main__":
     #### WARNING: as it stands one can only have a single source molecule
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
@@ -24,13 +26,13 @@ if __name__ == "__main__":
     parser.add_argument('-max_steps', type=int)
     parser.add_argument('-rulesfile', type=str)
     parser.add_argument('-rulesfile_format', type=str)
-    parser.add_argument('-topx', type=int)
-    parser.add_argument('-dmin', type=int)
-    parser.add_argument('-dmax', type=int)
-    parser.add_argument('-mwmax_source', type=int)
-    parser.add_argument('-mwmax_cof', type=int)
+    parser.add_argument('-topx', type=int, default=100)
+    parser.add_argument('-dmin', type=int, default=0)
+    parser.add_argument('-dmax', type=int, default=100)
+    parser.add_argument('-mwmax_source', type=int, default=1000)
+    parser.add_argument('-mwmax_cof', type=int, default=1000)
     parser.add_argument('-scope_csv', type=str)
-    parser.add_argument('-timeout', type=int)
+    parser.add_argument('-timeout', type=int, default=30)
     params = parser.parse_args()
     if params.max_steps<=0:
         logging.error('Maximal number of steps cannot be less or equal to 0')
