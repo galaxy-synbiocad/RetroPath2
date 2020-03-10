@@ -70,12 +70,16 @@ def main(sinkfile,
                    '/home/tmp_output/output.dat',
                    '-timeout',
                    str(timeout)]
-        docker_client.containers.run(image_str, 
-                command, 
-                auto_remove=True, 
-                detach=False, 
-                volumes={tmpOutputFolder+'/': {'bind': '/home/tmp_output', 'mode': 'rw'}})
+        container = docker_client.containers.run(image_str, 
+                                                 command, 
+                                                 detach=True, 
+                                                 stderr=True,
+                                                 volumes={tmpOutputFolder+'/': {'bind': '/home/tmp_output', 'mode': 'rw'}})
+        container.wait()
+        err = container.logs(stdout=False, stderr=True) 
+        print(err)
         shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
+        container.remove()
 
 
 ##
