@@ -3,7 +3,7 @@
 * Docker image: [tbd]
 * Base image: [ibisba/knime-base:3.6.2](https://hub.docker.com/r/ibisba/knime-base)
 
-Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sinl.csv and source.csv. 
+Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sink.csv and source.csv. We only support a single source molecule at this time. 
 
 ### How to run using Galaxy
 
@@ -25,11 +25,7 @@ We will cover calling RetroPath2.0 using Galaxy where the docker is installed lo
 docker build -t brsynth/retropath2-standalone:dev .
 ```
 
-It is recommended that one tests the docker using the following commands. First enter the docker in bash using:
-
-```
-docker run -it brsynth/retropath2-standalone:dev /bin/bash
-```
+### Running test
 
 To test the docker, run the following command:
 
