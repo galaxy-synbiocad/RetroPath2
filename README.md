@@ -1,23 +1,10 @@
-# Retropath2.0 docker 
+# Retropath2.0 docker
 
-* Docker image: [tbd]
-* Base image: [ibisba/knime-base:3.6.2](https://hub.docker.com/r/ibisba/knime-base)
+* Docker image: [brsynth/retroapth2-standalone](https://hub.docker.com/r/brsynth/retropath2-standalone)
 
-Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sink.csv and source.csv. We only support a single source molecule at this time. 
+Perform retrosynthesis search of possible metabolic routes between a source molecule and a collection of sink molecules. Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sink.csv and source.csv. We only support a single source molecule at this time. 
 
-### How to run using Galaxy
-
-WARNING: The galaxy tool .xml must be in the same folder as the script it calls
-
-WARNING: need to add docker to sudo
-
-WARNING: need to include the rule_rall_rp2.csv for knime in the /home/src/ folder
-
-```
-sudo groupadd docker
-sudo gpasswd -a $USER docker
-sudo service docker restart
-```
+## Building the docker
 
 We will cover calling RetroPath2.0 using Galaxy where the docker is installed locally and when the docker is remotely located using the Pulsar package. In both cases one needs to build the docker using the following command:
 
@@ -25,100 +12,38 @@ We will cover calling RetroPath2.0 using Galaxy where the docker is installed lo
 docker build -t brsynth/retropath2-standalone:dev .
 ```
 
-### Running test
+### Running the test
 
-To test the docker, run the following command:
+To test the docker, untar the test.tar.xz file and run the following command:
 
 ```
 python run.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
 ```
 
-### Local docker
+## Dependencies
 
-If one has the docker and the Galaxy services on the same machine, then the following Galaxy configurations are required to make them run. 
+* Base image: [ibisba/knime-base:3.6.2](https://hub.docker.com/r/ibisba/knime-base)
 
-##### Add the tool to Galaxy's tool_conf.xml
+## Contributing
 
-Create a new section in the Galaxy tool_conf.xml
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-```
-<section id="retro" name="Retro Nodes">
-  <tool file="/local/path/retroPath_galaxy.xml" />
-</section>
-```
+## Version
 
-##### Modify the job_conf.xml
+Version 8.0
 
-```
-<?xml version="1.0"?>
-<job_conf>
-  <plugins>
-    <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="4"/>
-  </plugins>
-  <destinations default="docker_local">
-    <destination id="local" runner="local" />
-    <destination id="docker_local" runner="local">
-      <param id="docker_enabled">true</param>
-      <param id="docker_sudo">false</param>
-      <param id="docker_auto_rm">true</param>
-      <param id="docker_set_user">root</param>
-    </destination>
-  </destinations>
-</job_conf>
-```
+## Authors
 
-It is important to run the docker as root user since we will be calling a script that writes files to a temporary folder inside the docker before sending bask to Galaxy
+* **Melchior du Lac**
+* Joan Hérisson
 
-### Pulsar docker call
+## License
 
-To run the tool on a remote server and call it using any Galaxy instance, we need to install and configure Pulsar and the docker of the tool
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-##### Add the tool your LOCAL Galaxy's tool_conf.xml
+## Acknowledgments
 
-```
-<section id="retro" name="Retro Nodes">
-  <tool file="/local/path/retroPath_galaxy.xml" />
-</section>
-```
-
-##### Make sure that this is on top of the retroPath_galaxy.xml
-
-```
-<requirements>
-  <container type="docker">ibisba/retropath2:latest</container>
-</requirements>
-```
-
-##### Modify the LOCAL job_conf.xml
-
-```
-<?xml version="1.0"?>
-<job_conf>
-  <plugins>
-    <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="4"/>
-    <plugin id="pulsar" type="runner" load="galaxy.jobs.runners.pulsar:PulsarRESTJobRunner" />
-  </plugins>
-  <destinations default="docker_local">
-    <destination id="local" runner="local" />
-    <destination id="docker_local" runner="local">
-      <param id="docker_enabled">true</param>
-      <param id="docker_sudo">false</param>
-      <param id="docker_auto_rm">true</param>
-      <param id="docker_set_user">root</param>
-    </destination>
-    <destination id="remote_cluster" runner="pulsar">
-      <param id="url">http://pulsar_server_ip_address:8913</param>
-      <param id="docker_enabled">true</param>
-      <param id="docker_sudo">false</param>
-      <param id="docker_auto_rm">true</param>
-      <param id="docker_set_user">root</param>
-    </destination>
-  </destinations>
-  <tools>
-    <tool id="retropath2" destination="remote_cluster" />
-  </tools>
-</job_conf>
-```
+* Thomas Duigou
 
 ### How to cite RetroPath2.0?
 Please cite:
