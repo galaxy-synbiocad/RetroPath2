@@ -55,7 +55,7 @@ def main(sinkfile,
                    '-rulesfile',
                    '/home/tmp_output/rules.dat',
                    '-rulesfile_format',
-                   rulesfile_format,
+                   str(rulesfile_format),
                    '-topx',
                    str(topx),
                    '-dmin',
@@ -70,13 +70,13 @@ def main(sinkfile,
                    '/home/tmp_output/output.dat',
                    '-timeout',
                    str(timeout)]
-        container = docker_client.containers.run(image_str, 
-                                                 command, 
-                                                 detach=True, 
+        container = docker_client.containers.run(image_str,
+                                                 command,
+                                                 detach=True,
                                                  stderr=True,
                                                  volumes={tmpOutputFolder+'/': {'bind': '/home/tmp_output', 'mode': 'rw'}})
         container.wait()
-        err = container.logs(stdout=False, stderr=True) 
+        err = container.logs(stdout=False, stderr=True)
         print(err)
         shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
         container.remove()
