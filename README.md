@@ -31,7 +31,7 @@ Advanced options:
 Compile the docker image if it hasen't already been done:
 
 ```
-docker build -t brsynth/retropath2-redis:dev .
+docker build -t brsynth/retropath2-redis .
 ```
 
 To run the service on a localhost as the Galaxy interface, after creating the image run the REST service using the following command:
