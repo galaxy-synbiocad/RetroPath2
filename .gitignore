@@ -1,5 +1,4 @@
 *.swp
-.Dockerfile.swp
+.Dockerfile.swpzz
+test/
 __pycache__/
-test/test_out_scope.csv
-test/results/
