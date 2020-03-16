@@ -30,7 +30,7 @@ def main(sinkfile,
          scope_csv,
          timeout):
     docker_client = docker.from_env()
-    image_str = 'brsynth/retropath2-standalone:dev'
+    image_str = 'brsynth/retropath2-standalone'
     try:
         image = docker_client.images.get(image_str)
     except docker.errors.ImageNotFound:
