@@ -16,8 +16,6 @@ import glob
 sys.path.insert(0, '/home/')
 import rpTool
 
-#def run_rp2(sourcefile, sinkfile, rulesfile, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, logger=None):
-
 if __name__ == "__main__":
     #### WARNING: as it stands one can only have a single source molecule
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
@@ -37,6 +35,21 @@ if __name__ == "__main__":
     if params.max_steps<=0:
         logging.error('Maximal number of steps cannot be less or equal to 0')
         exit(1)
+    if params.topx<0:
+        logging.error('Cannot have a topx value that is <0: '+str(params.topx))
+        exit(1)
+    if params.dmin<0:
+        logging.error('Cannot have a dmin value that is <0: '+str(params.dmin))
+        exit(1)
+    if params.dmax<0:
+        logging.error('Cannot have a dmax value that is <0: '+str(params.dmax))
+        exit(1)
+    if params.dmax>1000:
+        logging.error('Cannot have a dmax valie that is >1000: '+str(params.dmax))
+        exit(1)
+    if params.dmax<params.dmin:
+        logging.error('Cannot have dmin>dmax : dmin: '+str(params.dmin)+', dmax: '+str(params.dmax))
+        exit(1)
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
             rulesfile = params.rulesfile
@@ -52,7 +65,7 @@ if __name__ == "__main__":
                 exit(1)
             rulesfile = out_file[0]
         else:
-            logging.error('Cannot detect the rules_format: '+str(rulesfile_format))
+            logging.error('Cannot detect the rules_format: '+str(params.rulesfile_format))
             exit(1)
         result = rpTool.run_rp2(params.sourcefile,
                                 params.sinkfile,
