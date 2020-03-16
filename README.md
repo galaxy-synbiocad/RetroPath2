@@ -1,32 +1,32 @@
-# Retropath2.0
+# Retropath2.0 docker
 
-Build a reaction network from a set of source compounds to a set of sink compounds. Docker implementation with Flask REST, RQ and Redis of the KNIME retropath2.0 workflow. More information can be found [here](https://www.myexperiment.org/workflows/4987.html). 
+* Docker image: [brsynth/retroapth2-redis](https://hub.docker.com/r/brsynth/retropath2-redis)
 
-## Information Flow
+Perform retrosynthesis search of possible metabolic routes between a source molecule and a collection of sink molecules. Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sink.csv and source.csv. We only support a single source molecule at this time. 
 
-### Input
+## Input
 
-Required information:
-* **Sink File**: CSV of a target sink molecule (Can use "sink from SBML" node)
-* **Source File**: CSV list of source molecules (Can use "Make source" node)
-* **Pathway Length**: An integer determining the maximal pathway length
+Required:
+* **-sinkfile**: (string) Path to the sink file
+* **-sourcefile**: (string) Path to the source file
+* **-max_steps**: (integer) Maximal number of steps 
+* **-rulesfile**: (string) Path to the rules file
+* **-rulesfile_format**: (string) Valid Options: tar, csv. Format of the rules file
 
-Advanced options: 
-* **Rules file**: (optional) An input CSV file with the collections of reaction rules. The default are the rules from RetroPath2.0
-* **TopX**: (default 100) The maximal number of pathways to retain for each new iteration
-* **Minimum rule diameter**: (default: 0) Given a reaction rule, set the lower bound promiscuity
-* **Maximaum rule diameter**: (default: 1000) Given a reaction rule, set the upper bound promiscuity
-* **mwmax source**: (default: 1000)
-* **mwmax cof**: (default: 1000)
-* **Server URL**: Address of the REST service
-* **Timemout**: (default: 30 min) Limit the execution time of the tool
-* **Run in forward direction?**: (default: No)
+Advanced options:
+* **-topx**: (integer, default: 100) For each iteration, number of rules
+* **-dmin**: (integer, default: 0)
+* **-dmax**: (integer, default: 1000)
+* **-mwmax_source**: (integer, default: 1000)
+* **-mwmax_cof**: (integer, default: 1000)
+* **-timeout**: (integer, default: 30) Timeout in minutes
+* **-server_url**: (string, default: http://0.0.0.0:8888/REST) IP address of the REST service
 
-### Output
+## Output
 
-* **RetroPath Pathways**: describes the heterologous pathways calculated to produce a target molecule of interest (Source) with a complete description of the structures of the product and subtrates as well as the reaction rules applied to it. 
+* **-scope_csv**: (string) Path to the output scope csv file
 
-## Installing
+## Building the docker
 
 Compile the docker image if it hasen't already been done:
 
@@ -40,34 +40,40 @@ To run the service on a localhost as the Galaxy interface, after creating the im
 docker run -p 8888:8888 brsynth/retropath2-redis:dev
 ```
 
-## Prerequisites
+### Running the test
 
-* Docker - [Install](https://docs.docker.com/v17.09/engine/installation/)
-* Base image: [ibisba/knime-base:3.6.2](https://hub.docker.com/r/ibisba/knime-base)
+To test the docker, untar the test.tar.xz file and run the following command:
+
+```
+python run.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
+```
+
+## Dependencies
+
+* Base docker image: [ubuntu:18.04](https://hub.docker.com/layers/ubuntu/library/ubuntu/18.04/images/sha256-60a99a670b980963e4a9d882f631cba5d26ba5d14ccba2aa82a4e1f4d084fb1f?context=explore)
 
 ## Contributing
 
-TODO
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## Versioning
+## Version
 
-Version 0.1
+v8.0
 
 ## Authors
 
 * **Melchior du Lac**
-* Thomas Duigou
-* Baudoin Delépine
-* Pablo Carbonell
+* Joan Hérisson
 
 ## License
 
-[GPL3](https://github.com/Galaxy-SynBioCAD/RetroPath2/blob/master/LICENSE)
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-* Joan Hérisson
+* Thomas Duigou
 
 ### How to cite RetroPath2.0?
+Please cite:
 
 Delépine B, Duigou T, Carbonell P, Faulon JL. RetroPath2.0: A retrosynthesis workflow for metabolic engineers. Metabolic Engineering, 45: 158-170, 2018. DOI: https://doi.org/10.1016/j.ymben.2017.12.002
