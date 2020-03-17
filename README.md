@@ -45,7 +45,7 @@ docker run -p 8888:8888 brsynth/retropath2-redis:dev
 To test the docker, untar the test.tar.xz file and run the following command:
 
 ```
-python run.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
+python tool_RetroPath2.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
 ```
 
 ## Dependencies
