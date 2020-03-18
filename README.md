@@ -25,6 +25,10 @@ Advanced options:
 
 * **-scope_csv**: (string) Path to the output scope csv file
 
+## Dependencies
+
+* Base docker image: [ubuntu:18.04](https://hub.docker.com/layers/ubuntu/library/ubuntu/18.04/images/sha256-60a99a670b980963e4a9d882f631cba5d26ba5d14ccba2aa82a4e1f4d084fb1f?context=explore)
+
 ## Building the docker
 
 To build the docker, please run the following command in the project root folder:
@@ -40,10 +44,6 @@ To test the docker, untar the test.tar.xz file and run the following command:
 ```
 python run.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
 ```
-
-## Dependencies
-
-* Base docker image: [ubuntu:18.04](https://hub.docker.com/layers/ubuntu/library/ubuntu/18.04/images/sha256-60a99a670b980963e4a9d882f631cba5d26ba5d14ccba2aa82a4e1f4d084fb1f?context=explore)
 
 ## Contributing
 
