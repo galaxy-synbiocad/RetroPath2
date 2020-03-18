@@ -1,4 +1,4 @@
-# Retropath2.0 docker
+# Retropath2.0
 
 * Docker image: [brsynth/retroapth2-standalone](https://hub.docker.com/r/brsynth/retropath2-standalone)
 
