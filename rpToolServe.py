@@ -87,16 +87,16 @@ class RestQuery(Resource):
             time.sleep(2.0)
         ########################### 
         if result[1]==b'timeout':
-            app.logger.error.error('Timeout of RetroPath2.0')
+            app.logger.error('Timeout of RetroPath2.0')
             return Response("Timeout of RetroPath2.0 \n"+str(result[2]), status=400)
         elif result[1]==b'memoryerror':
-            app.logger.error.error('Memory allocation error')
+            app.logger.error('Memory allocation error')
             return Response("Memory allocation error \n"+str(result[2]), status=400)
         elif result[1]==b'oserror':
-            app.logger.error.error('rp2paths has generated an OS error')
+            app.logger.error('rp2paths has generated an OS error')
             return Response("rp2paths has generated an OS error \n"+str(result[2]), status=400)
         elif result[1]==b'ramerror':
-            app.logger.error.error('Could not setup a RAM limit')
+            app.logger.error('Could not setup a RAM limit')
             return Response("Could not setup a RAM limit \n"+str(result[2]), status=400)
         elif result[0]==b'':
             app.logger.error('Empty results')
