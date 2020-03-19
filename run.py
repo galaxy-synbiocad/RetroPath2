@@ -22,15 +22,15 @@ def main(sinkfile,
          max_steps,
          rulesfile,
          rulesfile_format,
-         topx,
-         dmin,
-         dmax,
-         mwmax_source,
-         mwmax_cof,
          scope_csv,
-         timeout):
+         topx=100,
+         dmin=0,
+         dmax=1000,
+         mwmax_source=1000,
+         mwmax_cof=1000,
+         timeout=90):
     docker_client = docker.from_env()
-    image_str = 'brsynth/retropath2-standalone'
+    image_str = 'brsynth/retropath2-standalone:dev'
     try:
         image = docker_client.images.get(image_str)
     except docker.errors.ImageNotFound:
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
     parser.add_argument('-scope_csv', type=str)
-    parser.add_argument('-timeout', type=int, default=30)
+    parser.add_argument('-timeout', type=int, default=90)
     params = parser.parse_args()
     if params.max_steps<=0:
         logging.error('Maximal number of steps cannot be less or equal to 0')
@@ -123,10 +123,10 @@ if __name__ == "__main__":
          params.max_steps,
          params.rulesfile,
          params.rulesfile_format,
+         params.scope_csv,
          params.topx,
          params.dmin,
          params.dmax,
          params.mwmax_source,
          params.mwmax_cof,
-         params.scope_csv,
          params.timeout)
