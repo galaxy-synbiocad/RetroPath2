@@ -84,7 +84,7 @@ if __name__ == "__main__":
         elif result[1]==b'oserror':
             logging.error('rp2paths has generated an OS error')
         elif result[1]==b'ramerror':
-            logging.error.error('Could not setup a RAM limit')
+            logging.error('Could not setup a RAM limit')
         elif result[0]==b'':
             logging.error('Empty results')
         with open(params.scope_csv, 'wb') as scope_csv:
