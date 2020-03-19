@@ -86,10 +86,7 @@ class RestQuery(Resource):
                 return Response('Job failed \n '+str(result), status=400)
             time.sleep(2.0)
         ########################### 
-        if result[0]==b'':
-            app.logger.error('Empty results')
-            return Response("Empty results \n"+str(result[2]), status=400)
-        elif result[1]==b'timeout':
+        if result[1]==b'timeout':
             app.logger.error.error('Timeout of RetroPath2.0')
             return Response("Timeout of RetroPath2.0 \n"+str(result[2]), status=400)
         elif result[1]==b'memoryerror':
@@ -101,6 +98,9 @@ class RestQuery(Resource):
         elif result[1]==b'ramerror':
             app.logger.error.error('Could not setup a RAM limit')
             return Response("Could not setup a RAM limit \n"+str(result[2]), status=400)
+        elif result[0]==b'':
+            app.logger.error('Empty results')
+            return Response("Empty results \n"+str(result[2]), status=400)
         scope_csv = io.BytesIO()
         scope_csv.write(result[0])
         ###### IMPORTANT ######
