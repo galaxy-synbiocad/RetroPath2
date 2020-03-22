@@ -77,8 +77,10 @@ def main(sinkfile,
                                                  volumes={tmpOutputFolder+'/': {'bind': '/home/tmp_output', 'mode': 'rw'}})
         container.wait()
         err = container.logs(stdout=False, stderr=True)
-        print(err)
-        shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
+        err_str = err.decode("utf-8")
+        print(err_str)
+        if not 'ERROR' in err_str:
+            shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
         container.remove()
 
 
