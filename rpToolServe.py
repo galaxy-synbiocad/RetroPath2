@@ -88,19 +88,24 @@ class RestQuery(Resource):
         ########################### 
         if result[1]==b'timeout':
             app.logger.error('Timeout of RetroPath2.0')
-            return Response("Timeout of RetroPath2.0 \n"+str(result[2]), status=400)
+            #return Response("Timeout of RetroPath2.0 \n"+str(result[2]), status=400)
+            return Response("Timeout of RetroPath2.0", status=400)
         elif result[1]==b'memoryerror':
             app.logger.error('Memory allocation error')
-            return Response("Memory allocation error \n"+str(result[2]), status=400)
+            #return Response("Memory allocation error \n"+str(result[2]), status=400)
+            return Response("RetroPath2.0 has exceeded its memory limit", status=400)
         elif result[1]==b'oserror':
-            app.logger.error('rp2paths has generated an OS error')
-            return Response("rp2paths has generated an OS error \n"+str(result[2]), status=400)
+            app.logger.error('RetroPath2.0 has generated an OS error')
+            #return Response("rp2paths has generated an OS error \n"+str(result[2]), status=400)
+            return Response("RetroPath2.0 returned an OS error", status=400)
         elif result[1]==b'ramerror':
             app.logger.error('Could not setup a RAM limit')
-            return Response("Could not setup a RAM limit \n"+str(result[2]), status=400)
+            #return Response("Could not setup a RAM limit \n"+str(result[2]), status=400)
+            return Response("RetroPath2.0 has exceeded its memory limit", status=400)
         elif result[0]==b'':
             app.logger.error('Empty results')
-            return Response("Empty results \n"+str(result[2]), status=400)
+            #return Response("Empty results \n"+str(result[2]), status=400)
+            return Response("RetroPath2.0 cannot find any solutions", status=400)
         scope_csv = io.BytesIO()
         scope_csv.write(result[0])
         ###### IMPORTANT ######
