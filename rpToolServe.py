@@ -90,6 +90,12 @@ class RestQuery(Resource):
             app.logger.error('Timeout of RetroPath2.0')
             #return Response("Timeout of RetroPath2.0 \n"+str(result[2]), status=400)
             return Response("Timeout of RetroPath2.0", status=400)
+        elif result[1]==b'sourceinsinkerror':
+            app.logger.error('Source exists in the sink')
+            return Response('Source exists in the sink', status=400)
+        elif result[1]==b'sourceinsinknotfounderror':
+            app.logger.error('Cannot find the sink-in-source file')
+            return Response('Cannot find the sink-in-source file', status=400)
         elif result[1]==b'memoryerror':
             app.logger.error('Memory allocation error')
             #return Response("Memory allocation error \n"+str(result[2]), status=400)
