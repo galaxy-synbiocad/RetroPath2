@@ -78,10 +78,21 @@ def main(sinkfile,
         container.wait()
         err = container.logs(stdout=False, stderr=True)
         err_str = err.decode("utf-8")
-        print(err_str)
-        if not 'ERROR' in err_str:
+        mess = container.logs(stdout=True, stderr=False)
+        mess_str = mess.decode("utf-8")
+        if 'ERROR' in err_str:
+            logging.error(err_str)
+            logging.error(mess_str)
+            container.remove()
+            return err_str
+        elif 'WARNING' in err_str:
+            logging.warning(err_str)
             shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
-        container.remove()
+            container.remove()
+            return err_str
+        else:
+            shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
+            container.remove()
 
 
 ##

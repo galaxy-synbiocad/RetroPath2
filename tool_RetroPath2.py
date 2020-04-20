@@ -12,9 +12,16 @@ import logging
 import tempfile
 import tarfile
 import glob
+import shutil
 
 sys.path.insert(0, '/home/')
 import rpTool
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%d-%m-%Y %H:%M:%S',
+)
 
 if __name__ == "__main__":
     #### WARNING: as it stands one can only have a single source molecule
@@ -52,7 +59,10 @@ if __name__ == "__main__":
         exit(1)
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
-            rulesfile = params.rulesfile
+            logging.info('Rules file: '+str(params.rulesfile))
+            rulesfile = tmpInputFolder+'/rules.csv'
+            shutil.copy(params.rulesfile, rulesfile)
+            logging.info('Rules file: '+str(rulesfile))
         elif params.rulesfile_format=='tar':
             with tarfile.open(params.rulesfile) as rf:
                 rf.extractall(tmpInputFolder)
@@ -79,13 +89,18 @@ if __name__ == "__main__":
                                 params.timeout)
         if result[1]==b'timeout':
             logging.error('Timeout of RetroPath2.0')
+            exit(1)
         elif result[1]==b'memoryerror':
             logging.error('Memory allocation error')
+            exit(1)
         elif result[1]==b'oserror':
             logging.error('rp2paths has generated an OS error')
+            exit(1)
         elif result[1]==b'ramerror':
             logging.error('Could not setup a RAM limit')
+            exit(1)
         elif result[0]==b'':
             logging.error('Empty results')
+            exit(1)
         with open(params.scope_csv, 'wb') as scope_csv:
             scope_csv.write(result[0])
