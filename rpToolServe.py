@@ -126,6 +126,7 @@ api.add_resource(RestQuery, '/REST/Query')
 
 if __name__== "__main__":
     handler = RotatingFileHandler('retropath2.log', maxBytes=10000, backupCount=1)
-    handler.setLevel(logging.DEBUG)
+    handler.setLevel(logging.DEBUG:w
+            )
     app.logger.addHandler(handler)
     app.run(host="0.0.0.0", port=8888, debug=False, threaded=True)
