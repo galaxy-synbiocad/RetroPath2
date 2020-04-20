@@ -17,11 +17,6 @@ import shutil
 sys.path.insert(0, '/home/')
 import rpTool
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-    datefmt='%d-%m-%Y %H:%M:%S',
-)
 
 if __name__ == "__main__":
     #### WARNING: as it stands one can only have a single source molecule
