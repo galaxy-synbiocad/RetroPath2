@@ -16,11 +16,15 @@ import resource
 import tempfile
 
 KPATH = '/usr/local/knime/knime'
-#KPATH = '/home/mdulac/knime_3.6.1/knime'
 RP_WORK_PATH = '/home/RetroPath2.0.knwf'
-#RP_WORK_PATH = '/home/mdulac/workspace/Galaxy-SynBioCAD/RetroPath2/RetroPath2_image/RetroPath2.0.knwf'
 #MAX_VIRTUAL_MEMORY = 20000*1024*1024 # 20 GB -- define what is the best
 MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
+
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%d-%m-%Y %H:%M:%S',
+)
 
 ##
 #
@@ -34,7 +38,6 @@ def limit_virtual_memory():
 #
 def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, logger=None):
     if logger==None:
-        logging.basicConfig(level=logging.DEBUG)
         logger = logging.getLogger(__name__)
     logging.info('Rules file: '+str(rules_path))
     ### run the KNIME RETROPATH2.0 workflow
