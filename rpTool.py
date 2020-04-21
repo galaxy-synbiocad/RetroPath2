@@ -18,6 +18,9 @@ import tempfile
 KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/RetroPath2.0.knwf'
 
+KPATH = '/home/mdulac/knime_3.6.1/knime'
+RP_WORK_PATH = 'RetroPath2.0.knwf'
+
 #MAX_VIRTUAL_MEMORY = 20000*1024*1024 # 20 GB -- define what is the best
 MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
 
