@@ -68,6 +68,14 @@ class RestQuery(Resource):
         conn = Redis()
         q = Queue('default', connection=conn, default_timeout='24h')
         #pass the cache parameters to the rpCofactors object
+        if params['partial_retro']=='True' or params['partial_retro']=='T' or params['partial_retro']=='true':
+            partial_retro = True
+        elif params['partial_retro']=='True' or params['partial_retro']=='F' or params['partial_retro']=='false':
+            partial_retro = False
+        else:
+            app.logger.warning('Cannot interpret partial_retro: '+str(params['partial_retro']))
+            app.logger.warning('Setting to False')
+            partial_retro = False
         async_results = q.enqueue(rpTool.run_rp2,
                                   sourcefile_bytes,
                                   sinkfile_bytes,
@@ -79,7 +87,7 @@ class RestQuery(Resource):
                                   int(params['mwmax_source']),
                                   int(params['mwmax_cof']),
                                   int(params['timeout']),
-                                  bool(params['partial_retro']))
+                                  partial_retro)
         result = None
         while result is None:
             result = async_results.return_value
@@ -106,7 +114,7 @@ class RestQuery(Resource):
             app.logger.error('Could not setup a RAM limit')
             return Response("RetroPath2.0 has exceeded its memory limit", status=400)
         elif result[1]==b'timeoutwarning' or result[1]==b'memwarning' or result[1]==b'noresultwarning' or result[1]==b'oswarning' or result[1]==b'ramwarning':
-            app.logger.warning(result[3])
+            app.logger.warning(result[2])
             app.logger.warning('Returning partial results') 
         if result[0]==b'':
             app.logger.error('Empty results')
@@ -127,4 +135,4 @@ if __name__== "__main__":
     handler = RotatingFileHandler('retropath2.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.DEBUG)
     app.logger.addHandler(handler)
-    app.run(host="0.0.0.0", port=8888, debug=False, threaded=True)
+    app.run(host="0.0.0.0", port=8888, debug=True, threaded=True)
