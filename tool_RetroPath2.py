@@ -54,6 +54,7 @@ def retropathUpload(sinkfile,
                 'mwmax_cof': mwmax_cof,
                 'timeout': timeout,
                 'partial_retro': partial_retro}
+        logging.info(data)
         files = {'sinkfile': open(sinkfile, 'rb'),
                 'sourcefile': open(sourcefile, 'rb'),
                 'rulesfile': open(rulesfile, 'rb'),
@@ -80,13 +81,13 @@ if __name__ == "__main__":
     parser.add_argument('-max_steps', type=int)
     parser.add_argument('-rulesfile', type=str)
     parser.add_argument('-rulesfile_format', type=str)
+    parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-topx', type=int, default=100)
     parser.add_argument('-dmin', type=int, default=0)
     parser.add_argument('-dmax', type=int, default=100)
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
-    parser.add_argument('-server_url', type=str)
-    parser.add_argument('-scope_csv', type=str)
+    parser.add_argument('-server_url', type=str, default='http://0.0.0.0:8888/REST')
     parser.add_argument('-timeout', type=int, default=30)
     parser.add_argument('-partial_retro', type=str, default='False')
     params = parser.parse_args()
