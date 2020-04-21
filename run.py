@@ -84,7 +84,7 @@ def main(sinkfile,
         if 'ERROR' in err_str:
             logging.error('\n'+err_str)
         elif 'WARNING' in err_str:
-            logging.warning('\n'err_str)
+            logging.warning('\n'+err_str)
             shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
         else:
             shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
