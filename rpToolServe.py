@@ -69,16 +69,17 @@ class RestQuery(Resource):
         q = Queue('default', connection=conn, default_timeout='24h')
         #pass the cache parameters to the rpCofactors object
         async_results = q.enqueue(rpTool.run_rp2,
-                                sinkfile_bytes,
-                                sourcefile_bytes,
-                                int(params['max_steps']),
-                                rulesfile_bytes,
-                                int(params['topx']),
-                                int(params['dmin']),
-                                int(params['dmax']),
-                                int(params['mwmax_source']),
-                                int(params['mwmax_cof']),
-                                int(params['timeout']))
+                                  sourcefile_bytes,
+                                  sinkfile_bytes,
+                                  rulesfile_bytes,
+                                  int(params['max_steps']),
+                                  int(params['topx']),
+                                  int(params['dmin']),
+                                  int(params['dmax']),
+                                  int(params['mwmax_source']),
+                                  int(params['mwmax_cof']),
+                                  int(params['timeout']),
+                                  bool(params['partial_retro']))
         result = None
         while result is None:
             result = async_results.return_value
@@ -88,7 +89,6 @@ class RestQuery(Resource):
         ########################### 
         if result[1]==b'timeout':
             app.logger.error('Timeout of RetroPath2.0')
-            #return Response("Timeout of RetroPath2.0 \n"+str(result[2]), status=400)
             return Response("Timeout of RetroPath2.0", status=400)
         elif result[1]==b'sourceinsinkerror':
             app.logger.error('Source exists in the sink')
@@ -98,19 +98,18 @@ class RestQuery(Resource):
             return Response('Cannot find the sink-in-source file', status=400)
         elif result[1]==b'memoryerror':
             app.logger.error('Memory allocation error')
-            #return Response("Memory allocation error \n"+str(result[2]), status=400)
             return Response("RetroPath2.0 has exceeded its memory limit", status=400)
         elif result[1]==b'oserror':
             app.logger.error('RetroPath2.0 has generated an OS error')
-            #return Response("rp2paths has generated an OS error \n"+str(result[2]), status=400)
             return Response("RetroPath2.0 returned an OS error", status=400)
         elif result[1]==b'ramerror':
             app.logger.error('Could not setup a RAM limit')
-            #return Response("Could not setup a RAM limit \n"+str(result[2]), status=400)
             return Response("RetroPath2.0 has exceeded its memory limit", status=400)
-        elif result[0]==b'':
+        elif result[1]==b'timeoutwarning' or result[1]==b'memwarning' or result[1]==b'noresultwarning' or result[1]==b'oswarning' or result[1]==b'ramwarning':
+            app.logger.warning(result[3])
+            app.logger.warning('Returning partial results') 
+        if result[0]==b'':
             app.logger.error('Empty results')
-            #return Response("Empty results \n"+str(result[2]), status=400)
             return Response("RetroPath2.0 cannot find any solutions", status=400)
         scope_csv = io.BytesIO()
         scope_csv.write(result[0])
@@ -126,7 +125,6 @@ api.add_resource(RestQuery, '/REST/Query')
 
 if __name__== "__main__":
     handler = RotatingFileHandler('retropath2.log', maxBytes=10000, backupCount=1)
-    handler.setLevel(logging.DEBUG:w
-            )
+    handler.setLevel(logging.DEBUG)
     app.logger.addHandler(handler)
     app.run(host="0.0.0.0", port=8888, debug=False, threaded=True)
