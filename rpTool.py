@@ -49,18 +49,12 @@ def run_rp2(source_bytes, sink_bytes, rules_bytes, max_steps, topx=100, dmin=0, 
         try:
             knime_command = KPATH+' -nosplash -nosave -reset --launcher.suppressErrors -application org.knime.product.KNIME_BATCH_APPLICATION -workflowFile='+RP_WORK_PATH+' -workflow.variable=input.dmin,"'+str(dmin)+'",int -workflow.variable=input.dmax,"'+str(dmax)+'",int -workflow.variable=input.max-steps,"'+str(max_steps)+'",int -workflow.variable=input.sourcefile,"'+str(source_path)+'",String -workflow.variable=input.sinkfile,"'+str(sink_path)+'",String -workflow.variable=input.rulesfile,"'+str(rules_path)+'",String -workflow.variable=input.topx,"'+str(topx)+'",int -workflow.variable=input.mwmax-source,"'+str(mwmax_source)+'",int -workflow.variable=input.mwmax-cof,"'+str(mwmax_cof)+'",int -workflow.variable=output.dir,"'+str(tmpOutputFolder)+'/",String -workflow.variable=output.solutionfile,"results.csv",String -workflow.variable=output.sourceinsinkfile,"source-in-sink.csv",String'
             commandObj = subprocess.Popen(knime_command.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=limit_virtual_memory)
-            result = b''
-            error = b''
             try:
                 #commandObj.wait(timeout=timeout) #subprocess timeout is in seconds while we input minutes
                 result, error = commandObj.communicate(timeout=timeout*60.0) #subprocess timeout is in seconds while we input minutes
             except subprocess.TimeoutExpired as e:
-                logging.warning('RetroPath2.0 has reached its execution timeout limit')
                 commandObj.kill()
                 is_timeout = True
-            #(result, error) = commandObj.communicate()
-            result = result.decode('utf-8')
-            error = error.decode('utf-8')
             #check to see if the results.csv is empty
             try:
                 count = 0

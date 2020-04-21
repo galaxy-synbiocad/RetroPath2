@@ -95,7 +95,7 @@ class RestQuery(Resource):
                 return Response('Job failed \n '+str(result), status=400)
             time.sleep(2.0)
         ########################### 
-        if result[1]==b'timeout':
+        if result[1]==b'timeouterror':
             app.logger.error('Timeout of RetroPath2.0')
             return Response("Timeout of RetroPath2.0", status=400)
         elif result[1]==b'sourceinsinkerror':
