@@ -68,9 +68,9 @@ class RestQuery(Resource):
         conn = Redis()
         q = Queue('default', connection=conn, default_timeout='24h')
         #pass the cache parameters to the rpCofactors object
-        if params['partial_retro']=='True' or params['partial_retro']=='T' or params['partial_retro']=='true':
+        if params['partial_retro']=='True' or params['partial_retro']=='T' or params['partial_retro']=='true' or params['partial_retro']==True:
             partial_retro = True
-        elif params['partial_retro']=='True' or params['partial_retro']=='F' or params['partial_retro']=='false':
+        elif params['partial_retro']=='True' or params['partial_retro']=='F' or params['partial_retro']=='false' or params['partial_retro']==False:
             partial_retro = False
         else:
             app.logger.warning('Cannot interpret partial_retro: '+str(params['partial_retro']))
