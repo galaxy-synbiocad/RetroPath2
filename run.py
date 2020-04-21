@@ -79,24 +79,16 @@ def main(sinkfile,
                                                  stderr=True,
                                                  volumes={tmpOutputFolder+'/': {'bind': '/home/tmp_output', 'mode': 'rw'}})
         container.wait()
-        err = container.logs(stdout=False, stderr=True)
+        err = container.logs(stdout=True, stderr=True)
         err_str = err.decode("utf-8")
-        mess = container.logs(stdout=True, stderr=False)
-        mess_str = mess.decode("utf-8")
         if 'ERROR' in err_str:
-            logging.error(err_str)
-            logging.error(mess_str)
-            container.remove()
-            return err_str
+            logging.error('\n'+err_str)
         elif 'WARNING' in err_str:
-            logging.warning(err_str)
-            logging.warning(mess_str)
+            logging.warning('\n'err_str)
             shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
-            container.remove()
-            return err_str
         else:
             shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
-            container.remove()
+        container.remove()
 
 
 ##

@@ -17,8 +17,19 @@ import shutil
 sys.path.insert(0, '/home/')
 import rpTool
 
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%d-%m-%Y %H:%M:%S',
+)
+
+logging.disable(logging.INFO)
+#logging.disable(logging.WARNING)
+
 
 if __name__ == "__main__":
+    #### used to pass the logger to the 
+    logger = logging.getLogger(__name__)
     #### WARNING: as it stands one can only have a single source molecule
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
     parser.add_argument('-sinkfile', type=str)
@@ -104,7 +115,7 @@ if __name__ == "__main__":
             logging.error('Could not setup a RAM limit')
             exit(1)
         elif result[1]==b'timeoutwarning' or result[1]==b'memwarning' or result[1]==b'noresultwarning' or result[1]==b'oswarning' or result[1]==b'ramwarning':
-            logging.warning(result[3])
+            logging.warning(result[2])
             logging.warning('Returning partial results')
         if result[0]==b'':
             logging.error('Empty results')
