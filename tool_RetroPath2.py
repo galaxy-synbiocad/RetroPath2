@@ -26,13 +26,14 @@ if __name__ == "__main__":
     parser.add_argument('-max_steps', type=int)
     parser.add_argument('-rulesfile', type=str)
     parser.add_argument('-rulesfile_format', type=str)
+    parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-topx', type=int, default=100)
     parser.add_argument('-dmin', type=int, default=0)
     parser.add_argument('-dmax', type=int, default=100)
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
-    parser.add_argument('-scope_csv', type=str)
-    parser.add_argument('-timeout', type=int, default=30)
+    parser.add_argument('-timeout', type=int, default=90)
+    parser.add_argument('-partial_retro', type=str, default='False')
     params = parser.parse_args()
     if params.max_steps<=0:
         logging.error('Maximal number of steps cannot be less or equal to 0')
@@ -51,6 +52,13 @@ if __name__ == "__main__":
         exit(1)
     if params.dmax<params.dmin:
         logging.error('Cannot have dmin>dmax : dmin: '+str(params.dmin)+', dmax: '+str(params.dmax))
+        exit(1)
+    if params.partial_retro=='False' or params.partial_retro=='false' or params.partial_retro=='F':
+        partial_retro = False
+    elif params.partial_retro=='True' or params.partial_retro=='true' or params.partial_retro=='T':
+        partial_retro = True
+    else:
+        logging.error('Cannot interpret partial_retro: '+str(params.partial_retro))
         exit(1)
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
@@ -81,8 +89,9 @@ if __name__ == "__main__":
                                 params.dmax,
                                 params.mwmax_source,
                                 params.mwmax_cof,
-                                params.timeout)
-        if result[1]==b'timeout':
+                                params.timeout,
+                                partial_retro)
+        if result[1]==b'timeouterror':
             logging.error('Timeout of RetroPath2.0')
             exit(1)
         elif result[1]==b'memoryerror':
@@ -94,7 +103,10 @@ if __name__ == "__main__":
         elif result[1]==b'ramerror':
             logging.error('Could not setup a RAM limit')
             exit(1)
-        elif result[0]==b'':
+        elif result[1]==b'timeoutwarning' or result[1]==b'memwarning' or result[1]==b'noresultwarning' or result[1]==b'oswarning' or result[1]==b'ramwarning':
+            logging.warning(result[3])
+            logging.warning('Returning partial results')
+        if result[0]==b'':
             logging.error('Empty results')
             exit(1)
         with open(params.scope_csv, 'wb') as scope_csv:
