@@ -18,8 +18,10 @@ import tempfile
 KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/RetroPath2.0.knwf'
 
+'''
 KPATH = '/home/mdulac/knime_3.6.1/knime'
 RP_WORK_PATH = 'RetroPath2.0.knwf'
+'''
 
 #MAX_VIRTUAL_MEMORY = 20000*1024*1024 # 20 GB -- define what is the best
 MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
@@ -77,7 +79,10 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
             if is_timeout:
                 if not is_results_empty and partial_retro:
                     logger.warning('Timeout from retropath2.0 ('+str(timeout)+' minutes)')
-                    return b'', b'timeoutwarning', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+                    with open(tmpOutputFolder+'/results.csv', 'rb') as op:
+                        results_csv = op.read()
+                    logger.warning('Passing the results file instead')
+                    return results_csv, b'timeoutwarning', str('Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
                 else:
                     logger.error('Timeout from retropath2.0 ('+str(timeout)+' minutes)')
                     return b'', b'timeouterror', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
@@ -101,7 +106,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                     logger.warning('RetroPath2.0 does not have sufficient memory to continue')
                     with open(tmpOutputFolder+'/results.csv', 'rb') as op:
                         results_csv = op.read()
-                    logger.warnning('Passing the results file instead')
+                    logger.warning('Passing the results file instead')
                     return results_csv, b'memwarning', str('Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
                 else:
                     logger.error('RetroPath2.0 does not have sufficient memory to continue')
@@ -117,7 +122,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                     logger.warning('No scope file generated')
                     with open(tmpOutputFolder+'/results.csv', 'rb') as op:
                         results_csv = op.read()
-                    logger.warnning('Passing the results file instead')
+                    logger.warning('Passing the results file instead')
                     return results_csv, b'noresultwarning', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
                 else:
                     logger.error('RetroPath2.0 has not found any results')
@@ -128,7 +133,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                 logger.warning(e) 
                 with open(tmpOutputFolder+'/results.csv', 'rb') as op:
                     results_csv = op.read()
-                logger.warnning('Passing the results file instead')
+                logger.warning('Passing the results file instead')
                 return results_csv, b'oswarning', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
             else:
                 logger.error('Running the RetroPath2.0 Knime program produced an OSError')
@@ -140,7 +145,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                 logger.warning(e)
                 with open(tmpOutputFolder+'/results.csv', 'rb') as op:
                     results_csv = op.read()
-                logger.warnning('Passing the results file instead')
+                logger.warning('Passing the results file instead')
                 return results_csv, b'ramwarning', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
             else:
                 logger.error('Cannot set the RAM usage limit')
