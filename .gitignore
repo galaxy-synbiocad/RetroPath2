@@ -1,4 +1,5 @@
 *.swp
-.Dockerfile.swpzz
+OLD/
+RetroPath2.0.knwf
 test/
 __pycache__/
