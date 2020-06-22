@@ -120,7 +120,7 @@ org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
 COPY rpTool.py /home/
-COPY galaxy/tool_RetroPath2.py /home/
+COPY galaxy/code/tool_RetroPath2.py /home/
 
 #debug
 #RUN mkdir /home/tmp_output/
