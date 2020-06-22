@@ -12,11 +12,24 @@ import logging
 import tempfile
 import tarfile
 import glob
+import shutil
 
 sys.path.insert(0, '/home/')
 import rpTool
 
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%d-%m-%Y %H:%M:%S',
+)
+
+logging.disable(logging.INFO)
+#logging.disable(logging.WARNING)
+
+
 if __name__ == "__main__":
+    #### used to pass the logger to the 
+    logger = logging.getLogger(__name__)
     #### WARNING: as it stands one can only have a single source molecule
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
     parser.add_argument('-sinkfile', type=str)
@@ -24,13 +37,14 @@ if __name__ == "__main__":
     parser.add_argument('-max_steps', type=int)
     parser.add_argument('-rulesfile', type=str)
     parser.add_argument('-rulesfile_format', type=str)
+    parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-topx', type=int, default=100)
     parser.add_argument('-dmin', type=int, default=0)
     parser.add_argument('-dmax', type=int, default=100)
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
-    parser.add_argument('-scope_csv', type=str)
-    parser.add_argument('-timeout', type=int, default=30)
+    parser.add_argument('-timeout', type=int, default=90)
+    parser.add_argument('-partial_retro', type=str, default='False')
     params = parser.parse_args()
     if params.max_steps<=0:
         logging.error('Maximal number of steps cannot be less or equal to 0')
@@ -50,9 +64,19 @@ if __name__ == "__main__":
     if params.dmax<params.dmin:
         logging.error('Cannot have dmin>dmax : dmin: '+str(params.dmin)+', dmax: '+str(params.dmax))
         exit(1)
+    if params.partial_retro=='False' or params.partial_retro=='false' or params.partial_retro=='F':
+        partial_retro = False
+    elif params.partial_retro=='True' or params.partial_retro=='true' or params.partial_retro=='T':
+        partial_retro = True
+    else:
+        logging.error('Cannot interpret partial_retro: '+str(params.partial_retro))
+        exit(1)
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
-            rulesfile = params.rulesfile
+            logging.info('Rules file: '+str(params.rulesfile))
+            rulesfile = tmpInputFolder+'/rules.csv'
+            shutil.copy(params.rulesfile, rulesfile)
+            logging.info('Rules file: '+str(rulesfile))
         elif params.rulesfile_format=='tar':
             with tarfile.open(params.rulesfile) as rf:
                 rf.extractall(tmpInputFolder)
@@ -76,16 +100,25 @@ if __name__ == "__main__":
                                 params.dmax,
                                 params.mwmax_source,
                                 params.mwmax_cof,
-                                params.timeout)
-        if result[1]==b'timeout':
+                                params.timeout,
+                                partial_retro)
+        if result[1]==b'timeouterror':
             logging.error('Timeout of RetroPath2.0')
+            exit(1)
         elif result[1]==b'memoryerror':
             logging.error('Memory allocation error')
+            exit(1)
         elif result[1]==b'oserror':
             logging.error('rp2paths has generated an OS error')
+            exit(1)
         elif result[1]==b'ramerror':
             logging.error('Could not setup a RAM limit')
-        elif result[0]==b'':
+            exit(1)
+        elif result[1]==b'timeoutwarning' or result[1]==b'memwarning' or result[1]==b'noresultwarning' or result[1]==b'oswarning' or result[1]==b'ramwarning':
+            logging.warning(result[2])
+            logging.warning('Returning partial results')
+        if result[0]==b'':
             logging.error('Empty results')
+            exit(1)
         with open(params.scope_csv, 'wb') as scope_csv:
             scope_csv.write(result[0])

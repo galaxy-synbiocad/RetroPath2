@@ -28,7 +28,8 @@ def main(sinkfile,
          dmax=1000,
          mwmax_source=1000,
          mwmax_cof=1000,
-         timeout=90):
+         timeout=90,
+         partial_retro=False):
     docker_client = docker.from_env()
     image_str = 'brsynth/retropath2-standalone:dev'
     try:
@@ -69,17 +70,23 @@ def main(sinkfile,
                    '-scope_csv',
                    '/home/tmp_output/output.dat',
                    '-timeout',
-                   str(timeout)]
+                   str(timeout),
+                   '-partial_retro',
+                   str(partial_retro)]
         container = docker_client.containers.run(image_str,
                                                  command,
                                                  detach=True,
                                                  stderr=True,
                                                  volumes={tmpOutputFolder+'/': {'bind': '/home/tmp_output', 'mode': 'rw'}})
         container.wait()
-        err = container.logs(stdout=False, stderr=True)
+        err = container.logs(stdout=True, stderr=True)
         err_str = err.decode("utf-8")
-        print(err_str)
-        if not 'ERROR' in err_str:
+        if 'ERROR' in err_str:
+            logging.error('\n'+err_str)
+        elif 'WARNING' in err_str:
+            logging.warning('\n'+err_str)
+            shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
+        else:
             shutil.copy(tmpOutputFolder+'/output.dat', scope_csv)
         container.remove()
 
@@ -88,19 +95,20 @@ def main(sinkfile,
 #
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser('Python wrapper to run RetroPath2.0')
+    parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
     parser.add_argument('-sinkfile', type=str)
     parser.add_argument('-sourcefile', type=str)
     parser.add_argument('-max_steps', type=int)
     parser.add_argument('-rulesfile', type=str)
     parser.add_argument('-rulesfile_format', type=str)
+    parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-topx', type=int, default=100)
     parser.add_argument('-dmin', type=int, default=0)
     parser.add_argument('-dmax', type=int, default=1000)
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
-    parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-timeout', type=int, default=90)
+    parser.add_argument('-partial_retro', type=str, default='False')
     params = parser.parse_args()
     if params.max_steps<=0:
         logging.error('Maximal number of steps cannot be less or equal to 0')
