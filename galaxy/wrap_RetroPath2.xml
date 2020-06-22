@@ -1,0 +1,125 @@
+<tool id="retropath2" name="RetroPath2.0" version="8.0">
+  <description>Build a reaction network from a set of source compounds to a set of sink compounds</description>
+  <requirements>
+		<requirement type="package">requests</requirement>
+  </requirements>
+  <stdio>
+		<regex match="ERROR:" level="error" />
+		<regex match="WARNING:" level="warning" />
+	</stdio>
+  <command detect_errors="exit_code"><![CDATA[
+		'$__tool_directory__/tool_RetroPath2.py' -sinkfile '$sinkfile' -sourcefile '$sourcefile' -max_steps '$max_steps' -rulesfile_format '$rulesfile.format' -rulesfile '$rulesfile.input_rules' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -server_url '$adv.server_url' -timeout '$adv.timeout' -scope_csv '$scope_csv' -partial_retro '$adv.partial_retro'
+  ]]></command>
+  <inputs>
+    <conditional name="rulesfile">
+      <param name="format" type="select" label="Rules input format">
+        <option value="tar" type="text">TAR</option>
+        <option value="csv" type="text" selected="True">CSV</option>
+      </param>
+      <when value="csv">
+		    <param name="input_rules" type="data" format="csv" label="Rules file" />
+      </when>
+      <when value="tar">
+		    <param name="input_rules" type="data" format="tar" label="Rules file" />
+      </when>
+    </conditional>
+		<param name="sinkfile" type="data" format="csv" label="Sink file" />
+		<param name="sourcefile" type="data" format="csv" label="Source file" />
+		<param name="max_steps" type="integer" value="3" label="Maximal pathway length" />
+		<section name="adv" title="Advanced Options" expanded="false">
+			<param name="topx" type="integer" value="100" label="TopX" />
+			<param name="dmin" type="integer" value="0" label="Minimum rule diameter" />
+			<param name="dmax" type="integer" value="1000" label="Maximum rule diameter" />
+      <param name="mwmax_source" type="integer" value="1000" label="Molecular weight of source (Da)" />
+			<param name="mwmax_cof" type="integer" value="1000" label="Molecular weight of coefficients (Da)" />
+			<param name="server_url" type="text" value="http://172.19.0.2:8888/REST" label="Server URL" />
+			<param name="timeout" type="integer" value="90" label="Timeout (min)" />
+			<param name="partial_retro" type="boolean" truevalue="True" falsevalue="False" checked="true" label="Return partial results" />
+		</section>
+  </inputs>
+  <outputs>
+		<data name="scope_csv" format="csv" label="RetroPath Pathways" />
+  </outputs>
+  <help><![CDATA[
+Retropath2.0
+===================
+
+
+This tool performs retrosynthesis search for possible metabolic routes between a source molecule and a collection of sink molecules. It takes as input, files from RetroRules, source and sink compounds (can be generated as explained in SynBioCAD Utilities), and the maximal pathway length (i.e; the number of steps). Only a single source molecule is processed at this time.
+Using Advanced Options, you can define the maximum number of compounds to keep for a next iteration (TopX), the minimal (dmin) and maximal (dmax) diameter for the reaction rules, and the maximum molecular weight of the source.
+The Server URL is the IP address of the tools. By default, a local address is mentioned but external servers may be specified here too. Lastly, the Timeout parameter can be used to increase the maximum execution time of the tool. This limit is set for the server version of the tool. Another internal limit is set for the RAM usage upon deployment. This is designed to limit the potential combinatorial explosion that may occur with RetroPath2.0 and enable the tool to be deployed on a server for numerous users to access it simultaneously. 
+
+
+Input
+-----
+
+Required:
+
+
+* **-sinkfile**\ : (string) Path to the sink file
+* **-sourcefile**\ : (string) Path to the source file
+* **-max_steps**\ : (integer) Maximal number of steps 
+* **-rulesfile**\ : (string) Path to the rules file
+* **-rulesfile_format**\ : (string) Valid Options: tar, csv. Format of the rules file
+
+Advanced options:
+
+
+* **-topx**\ : (integer, default: 100) For each iteration, number of rules
+* **-dmin**\ : (integer, default: 0)
+* **-dmax**\ : (integer, default: 1000)
+* **-mwmax_source**\ : (integer, default: 1000)
+* **-mwmax_cof**\ : (integer, default: 1000)
+* **-timeout**\ : (integer, default: 30) Timeout in minutes
+* **-server_url**\ : (string, default: http://0.0.0.0:8888/REST) IP address of the REST service
+
+Output
+------
+
+
+* **-scope_csv**\ : (string) Path to the output scope csv file
+
+
+Project Links
+---------------------
+
+* `GitHub <https://github.com/Galaxy-SynBioCAD/RetroPath2>`_
+* `Docker <https://hub.docker.com/r/brsynth/retropath2>`_
+
+Version
+-------
+
+8.0
+
+Authors
+-------
+
+
+* **Melchior du Lac**
+* Joan Hérisson
+
+License
+-------
+
+`MIT <https://raw.githubusercontent.com/Galaxy-SynBioCAD/RetroPath2/redis-dev/LICENSE>`_
+
+Acknowledgments
+---------------
+
+
+* Thomas Duigou
+
+]]></help>
+  <citations>
+    <citation type="bibtex">
+@article{delepine2018retropath2,
+  title={RetroPath2. 0: a retrosynthesis workflow for metabolic engineers},
+  author={Del{\'e}pine, Baudoin and Duigou, Thomas and Carbonell, Pablo and Faulon, Jean-Loup},
+  journal={Metabolic engineering},
+  volume={45},
+  pages={158--170},
+  year={2018},
+  publisher={Elsevier}}
+    </citation>
+  </citations>
+</tool>
