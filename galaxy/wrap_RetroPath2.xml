@@ -1,0 +1,118 @@
+<tool id="retropath2" name="RetroPath2.0" version="8.0">
+  <description>Build a reaction network from a set of source compounds to a set of sink compounds</description>
+  <requirements>
+		<container type="docker">brsynth/retropath2-standalone:dev</container>
+  </requirements>
+  <stdio>
+		<regex match="ERROR:" level="error" />
+		<regex match="WARNING:" level="warning" />
+		<regex match="timeout" level="error" />
+		<regex match="memoryerror" level="error" />
+		<regex match="oserror" level="error" />
+		<regex match="ramerror" level="error" />
+	</stdio>
+  <command detect_errors="exit_code"><![CDATA[
+		'$__tool_directory__/tool_RetroPath2.py' -sinkfile '$sinkfile' -sourcefile '$sourcefile' -max_steps '$max_steps' -rulesfile '$rulesfile.input_rules' -rulesfile_format '$rulesfile.format' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -timeout '$adv.timeout' -scope_csv '$scope_csv'
+  ]]></command>
+  <inputs>
+    <conditional name="rulesfile">
+      <param name="format" type="select" label="Rules input format">
+        <option value="tar" type="text" selected="true">TAR</option>
+        <option value="csv" type="text">CSV</option>
+      </param>
+      <when value="csv">
+		    <param name="input_rules" type="data" format="csv" label="Rules File" />
+      </when>
+      <when value="tar">
+		    <param name="input_rules" type="data" format="tar" label="Rules File" />
+      </when>
+    </conditional>
+		<param name="sinkfile" type="data" format="csv" label="Sink File" />
+		<param name="sourcefile" type="data" format="csv" label="Source File" />
+		<param name="max_steps" type="integer" value="3" label="Pathway length" />
+		<section name="adv" title="Advanced Options" expanded="false">
+			<param name="topx" type="integer" value="100" label="TopX" />
+			<param name="dmin" type="integer" value="0" label="Minimum rule diameter" />
+			<param name="dmax" type="integer" value="1000" label="Maximum rule diameter" />
+			<param name="mwmax_source" type="integer" value="1000" label="mwmax source" />
+			<param name="mwmax_cof" type="integer" value="1000" label="mwmax cof" />
+			<param name="timeout" type="integer" value="90" label="Timeout (min)" />
+		</section>
+  </inputs>
+  <outputs>
+		<data name="scope_csv" format="csv" label="RetroPath pathways" />
+  </outputs>
+  <help><![CDATA[
+Retropath2.0
+============
+
+
+* Docker image: `brsynth/retroapth2-standalone <https://hub.docker.com/r/brsynth/retropath2-standalone>`_
+
+Perform retrosynthesis search of possible metabolic routes between a source molecule and a collection of sink molecules. Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sink.csv and source.csv. We only support a single source molecule at this time. 
+
+Input
+-----
+
+Required:
+
+
+* **-sinkfile**\ : (string) Path to the sink file
+* **-sourcefile**\ : (string) Path to the source file
+* **-max_steps**\ : (integer) Maximal number of steps 
+* **-rulesfile**\ : (string) Path to the rules file
+* **-rulesfile_format**\ : (string) Valid Options: tar, csv. Format of the rules file
+
+Advanced options:
+
+
+* **-topx**\ : (integer, default: 100) For each iteration, number of rules
+* **-dmin**\ : (integer, default: 0)
+* **-dmax**\ : (integer, default: 1000)
+* **-mwmax_source**\ : (integer, default: 1000)
+* **-mwmax_cof**\ : (integer, default: 1000)
+* **-timeout**\ : (integer, default: 30) Timeout in minutes
+
+Output
+------
+
+
+* **-scope_csv**\ : (string) Path to the output scope csv file
+
+Version
+-------
+
+v8.0
+
+Authors
+-------
+
+
+* **Melchior du Lac**
+* Joan Hérisson
+
+License
+-------
+
+This project is licensed under the MIT License - see the `LICENSE.md <LICENSE.md>`_ file for details
+
+Acknowledgments
+---------------
+
+
+* Thomas Duigou
+
+]]></help>
+  <citations>
+    <citation type="bibtex">
+@article{delepine2018retropath2,
+  title={RetroPath2. 0: a retrosynthesis workflow for metabolic engineers},
+  author={Del{\'e}pine, Baudoin and Duigou, Thomas and Carbonell, Pablo and Faulon, Jean-Loup},
+  journal={Metabolic engineering},
+  volume={45},
+  pages={158--170},
+  year={2018},
+  publisher={Elsevier}}
+    </citation>
+  </citations>
+</tool>
