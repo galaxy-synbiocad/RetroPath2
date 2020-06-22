@@ -1,0 +1,3 @@
+  <section id="sbc" name="SynBioCAD">
+    <tool file="RetroPath2/code/wrap_RetroPath2.xml" />
+  </section>
