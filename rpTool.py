@@ -23,6 +23,14 @@ KPATH = '/home/mdulac/knime_3.6.1/knime'
 RP_WORK_PATH = 'RetroPath2.0.knwf'
 '''
 
+logging.basicConfig(
+    #level=logging.DEBUG,
+    level=logging.WARNING,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%d-%m-%Y %H:%M:%S',
+)
+
+
 #MAX_VIRTUAL_MEMORY = 20000*1024*1024 # 20 GB -- define what is the best
 MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
 
