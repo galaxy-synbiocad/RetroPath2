@@ -1,11 +1,7 @@
 <tool id="retropath2" name="RetroPath2.0" version="8.0">
   <description>Build a reaction network from a set of source compounds to a set of sink compounds</description>
   <requirements>
-<<<<<<< HEAD
 		<container type="docker">brsynth/retropath2-standalone</container>
-=======
-		<container type="docker">brsynth/retropath2-standalone:dev</container>
->>>>>>> standalone-dev
   </requirements>
   <stdio>
 		<regex match="ERROR:" level="error" />
@@ -40,11 +36,7 @@
 			<param name="dmax" type="integer" value="1000" label="Maximum rule diameter" />
 			<param name="mwmax_source" type="integer" value="1000" label="mwmax source" />
 			<param name="mwmax_cof" type="integer" value="1000" label="mwmax cof" />
-<<<<<<< HEAD
-			<param name="timeout" type="integer" value="30" label="Timeout (min)" />
-=======
 			<param name="timeout" type="integer" value="90" label="Timeout (min)" />
->>>>>>> standalone-dev
 		</section>
   </inputs>
   <outputs>

@@ -18,18 +18,14 @@ sys.path.insert(0, '/home/')
 import rpTool
 
 logging.basicConfig(
-    level=logging.WARNING,
+    #level=logging.WARNING,
+    level=logging.ERROR,
     format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
     datefmt='%d-%m-%Y %H:%M:%S',
 )
 
-logging.disable(logging.INFO)
-#logging.disable(logging.WARNING)
-
 
 if __name__ == "__main__":
-    #### used to pass the logger to the 
-    logger = logging.getLogger(__name__)
     #### WARNING: as it stands one can only have a single source molecule
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
     parser.add_argument('-sinkfile', type=str)
@@ -73,10 +69,10 @@ if __name__ == "__main__":
         exit(1)
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
-            logging.info('Rules file: '+str(params.rulesfile))
+            logging.debug('Rules file: '+str(params.rulesfile))
             rulesfile = tmpInputFolder+'/rules.csv'
             shutil.copy(params.rulesfile, rulesfile)
-            logging.info('Rules file: '+str(rulesfile))
+            logging.debug('Rules file: '+str(rulesfile))
         elif params.rulesfile_format=='tar':
             with tarfile.open(params.rulesfile) as rf:
                 rf.extractall(tmpInputFolder)
@@ -91,8 +87,12 @@ if __name__ == "__main__":
         else:
             logging.error('Cannot detect the rules_format: '+str(params.rulesfile_format))
             exit(1)
-        result = rpTool.run_rp2(params.sourcefile,
-                                params.sinkfile,
+        sourcefile = tmpInputFolder+'/source.csv'
+        shutil.copy(params.sourcefile, sourcefile)
+        sinkfile = tmpInputFolder+'/sink.csv'
+        shutil.copy(params.sinkfile, sinkfile)
+        result = rpTool.run_rp2(sourcefile,
+                                sinkfile,
                                 rulesfile,
                                 params.max_steps,
                                 params.topx,

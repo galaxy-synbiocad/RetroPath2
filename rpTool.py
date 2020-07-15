@@ -25,7 +25,8 @@ RP_WORK_PATH = 'RetroPath2.0.knwf'
 
 logging.basicConfig(
     #level=logging.DEBUG,
-    level=logging.WARNING,
+    #level=logging.WARNING,
+    level=logging.ERROR,
     format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
     datefmt='%d-%m-%Y %H:%M:%S',
 )
@@ -47,15 +48,15 @@ def limit_virtual_memory():
 def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, partial_retro=False, logger=None):
     if logger==None:
         logger = logging.getLogger(__name__)
-    logger.info('Rules file: '+str(rules_path))
-    logger.info('Timeout: '+str(timeout*60.0)+' seconds')
+    logger.debug('Rules file: '+str(rules_path))
+    logger.debug('Timeout: '+str(timeout*60.0)+' seconds')
     is_timeout = False
     is_results_empty = True
     ### run the KNIME RETROPATH2.0 workflow
     with tempfile.TemporaryDirectory() as tmpOutputFolder:
         try:
             knime_command = KPATH+' -nosplash -nosave -reset --launcher.suppressErrors -application org.knime.product.KNIME_BATCH_APPLICATION -workflowFile='+RP_WORK_PATH+' -workflow.variable=input.dmin,"'+str(dmin)+'",int -workflow.variable=input.dmax,"'+str(dmax)+'",int -workflow.variable=input.max-steps,"'+str(max_steps)+'",int -workflow.variable=input.sourcefile,"'+str(source_path)+'",String -workflow.variable=input.sinkfile,"'+str(sink_path)+'",String -workflow.variable=input.rulesfile,"'+str(rules_path)+'",String -workflow.variable=input.topx,"'+str(topx)+'",int -workflow.variable=input.mwmax-source,"'+str(mwmax_source)+'",int -workflow.variable=input.mwmax-cof,"'+str(mwmax_cof)+'",int -workflow.variable=output.dir,"'+str(tmpOutputFolder)+'/",String -workflow.variable=output.solutionfile,"results.csv",String -workflow.variable=output.sourceinsinkfile,"source-in-sink.csv",String'
-            logger.info('KNIME command: '+str(knime_command))
+            logger.debug('KNIME command: '+str(knime_command))
             commandObj = subprocess.Popen(knime_command.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=limit_virtual_memory)
             result = b''
             error = b''
@@ -69,9 +70,9 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
             #(result, error) = commandObj.communicate()
             result = result.decode('utf-8')
             error = error.decode('utf-8')
-            logger.info('RetroPath2.0 results message: '+str(result))
-            logger.info('RetroPath2.0 error message: '+str(error))
-            logger.info('Output folder: '+str(glob.glob(tmpOutputFolder+'/*')))
+            logger.debug('RetroPath2.0 results message: '+str(result))
+            logger.debug('RetroPath2.0 error message: '+str(error))
+            logger.debug('Output folder: '+str(glob.glob(tmpOutputFolder+'/*')))
             #check to see if the results.csv is empty
             try:
                 count = 0
