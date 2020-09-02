@@ -94,7 +94,7 @@ class RestQuery(Resource):
         while result is None:
             result = async_results.return_value
             if async_results.get_status()=='failed':
-                return Response('Job failed \n '+str(result), status=400)
+                return Response('Redis job failed \n '+str(result), status=500)
             time.sleep(2.0)
         ###########################
         status_message = 'Successfull execution'
@@ -105,9 +105,20 @@ class RestQuery(Resource):
                 app.logger.error('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
                 return Response('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool', status=408)
             else:
-                app.logger.warning('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
-                app.logger.warning('Returning partial results') 
-                status_message = 'WARNING: Timeout of RetroPath2.0--Try increasing the timeout limit of the tool--Returning partial results'
+                if result[0]==b'':
+                    return Response('Timeout of RetroPath2.0 caused it to not find any solutions', status=404)
+                else:
+                    app.logger.warning('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
+                    app.logger.warning('Returning partial results') 
+                    status_message = 'WARNING: Timeout of RetroPath2.0--Try increasing the timeout limit of the tool--Returning partial results'
+                    scope_csv = io.BytesIO()
+                    scope_csv.write(result[0])
+                    ###### IMPORTANT ######
+                    scope_csv.seek(0)
+                    #######################
+                    response = make_response(send_file(scope_csv, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv'))
+                    response.headers['status_message'] = status_message
+                    return response
         elif result[1]==b'memwarning' or result[1]==b'memerror':
             #for debugging
             #app.logger.warning(result[2])
@@ -115,9 +126,20 @@ class RestQuery(Resource):
                 app.logger.error('RetroPath2.0 has exceeded its memory limit')
                 return Response('RetroPath2.0 has exceeded its memory limit', status=403)
             else:
-                app.logger.warning('RetroPath2.0 has exceeded its memory limit')
-                app.logger.warning('Returning partial results') 
-                status_message = 'WARNING: RetroPath2.0 has exceeded its memory limit--Returning partial results'
+                if result[0]==b'':
+                    return Response('Memory limit reached by RetroPath2.0 caused it to not find any solutions', status=404)
+                else:
+                    app.logger.warning('RetroPath2.0 has exceeded its memory limit')
+                    app.logger.warning('Returning partial results') 
+                    status_message = 'WARNING: RetroPath2.0 has exceeded its memory limit--Returning partial results'
+                    scope_csv = io.BytesIO()
+                    scope_csv.write(result[0])
+                    ###### IMPORTANT ######
+                    scope_csv.seek(0)
+                    #######################
+                    response = make_response(send_file(scope_csv, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv'))
+                    response.headers['status_message'] = status_message
+                    return response
         elif result[1]==b'sourceinsinkerror':
             app.logger.error('Source exists in the sink')
             return Response('Source exists in the sink', status=403)
@@ -132,27 +154,25 @@ class RestQuery(Resource):
             return Response('RetroPath2.0 returned an OS error', status=500)
         elif result[1]==b'noresultwarning':
             if partial_retro:
-                app.logger.warning('RetroPath2.0 did not complete successfully')
-                app.logger.warning('Returning partial results') 
-                status_message = 'WARNING: RetroPath2.0 did not complete successfully--Returning partial results'
+                if result[0]==b'':
+                    return Response('No results warning caused it to return no results', status=404)
+                else:
+                    app.logger.warning('RetroPath2.0 did not complete successfully')
+                    app.logger.warning('Returning partial results') 
+                    status_message = 'WARNING: RetroPath2.0 did not complete successfully--Returning partial results'
+                    scope_csv = io.BytesIO()
+                    scope_csv.write(result[0])
+                    ###### IMPORTANT ######
+                    scope_csv.seek(0)
+                    #######################
+                    response = make_response(send_file(scope_csv, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv'))
+                    response.headers['status_message'] = status_message
+                    return response
             else:
                 return Response('RetroPath2.0 could not complete successfully', status=404)
         elif result[1]==b'noresulterror':
             app.logger.error('Empty results')
-            return Response('RetroPath2.0 returned an empty file, cannot find any solutions', status=404)
-        if result[0]==b'':
-            app.logger.error('Empty results')
-            return Response('RetroPath2.0 returned an empty file, cannot find any solutions', status=404)
-        scope_csv = io.BytesIO()
-        #app.logger.error(result[0])
-        scope_csv.write(result[0])
-        ###### IMPORTANT ######
-        scope_csv.seek(0)
-        #######################
-        response = make_response(send_file(scope_csv, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv'))
-        response.headers['status_message'] = status_message
-        #app.logger.error('status_message: '+str(status_message))
-        return response
+            return Response('RetroPath2.0 could not find any solutions', status=404)
 
 
 api.add_resource(RestApp, '/REST')
