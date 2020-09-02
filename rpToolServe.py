@@ -107,7 +107,7 @@ class RestQuery(Resource):
             else:
                 app.logger.warning('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
                 app.logger.warning('Returning partial results') 
-                status_message = 'WARNING: Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool -- Returning partial results'
+                status_message = 'WARNING: Timeout of RetroPath2.0--Try increasing the timeout limit of the tool--Returning partial results'
         elif result[1]==b'memwarning' or result[1]==b'memerror':
             #for debugging
             #app.logger.warning(result[2])
@@ -117,7 +117,7 @@ class RestQuery(Resource):
             else:
                 app.logger.warning('RetroPath2.0 has exceeded its memory limit')
                 app.logger.warning('Returning partial results') 
-                status_message = 'WARNING: RetroPath2.0 has exceeded its memory limit -- Returning partial results'
+                status_message = 'WARNING: RetroPath2.0 has exceeded its memory limit--Returning partial results'
         elif result[1]==b'sourceinsinkerror':
             app.logger.error('Source exists in the sink')
             return Response('Source exists in the sink', status=403)
@@ -130,12 +130,19 @@ class RestQuery(Resource):
         elif result[1]==b'oserror' or result[1]==b'oswarning':
             app.logger.error('RetroPath2.0 has generated an OS error')
             return Response('RetroPath2.0 returned an OS error', status=500)
-        elif result[1]==b'noresultwarning' or result[1]==b'noresulterror':
+        elif result[1]==b'noresultwarning':
+            if partial_retro:
+                app.logger.warning('RetroPath2.0 did not complete successfully')
+                app.logger.warning('Returning partial results') 
+                status_message = 'WARNING: RetroPath2.0 did not complete successfully--Returning partial results'
+            else:
+                return Response('RetroPath2.0 could not complete successfully', status=404)
+        elif result[1]==b'noresulterror':
             app.logger.error('Empty results')
-            return Response('RetroPath2.0 returned an empty file, cannot find any solutions', status=400)
+            return Response('RetroPath2.0 returned an empty file, cannot find any solutions', status=404)
         if result[0]==b'':
             app.logger.error('Empty results')
-            return Response('RetroPath2.0 returned an empty file, cannot find any solutions', status=400)
+            return Response('RetroPath2.0 returned an empty file, cannot find any solutions', status=404)
         scope_csv = io.BytesIO()
         #app.logger.error(result[0])
         scope_csv.write(result[0])

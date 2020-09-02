@@ -68,7 +68,7 @@ def retropathUpload(sinkfile,
             logging.error(r.text)
             return False
         status = r.headers['status_message']
-        status = status.status.replace('--', '\n')
+        status = status.replace('--', '\n')
         logging.info(status)
         #not sure why Galaxy does not detect the logging results, need to print the status message to handle WARNINGS
         print(status)

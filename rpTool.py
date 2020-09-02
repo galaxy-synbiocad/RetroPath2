@@ -69,13 +69,11 @@ def run_rp2(source_bytes, sink_bytes, rules_bytes, max_steps, topx=100, dmin=0, 
                 if count>1:
                     is_results_empty = False
             except (IndexError, FileNotFoundError) as e:
+                #is_results_empty is already set to True
                 pass
-            ### handle timeout
-            if is_timeout:
-                if not is_results_empty and partial_retro:
-                    return b'', b'timeoutwarning', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
-                else:
-                    return b'', b'timeouterror', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+            ########################################################################
+            ##################### HANDLE all the different cases ###################
+            ########################################################################
             ### if source is in sink. Note making sure that it contains more than the default first line
             try:
                 count = 0
@@ -87,6 +85,14 @@ def run_rp2(source_bytes, sink_bytes, rules_bytes, max_steps, topx=100, dmin=0, 
                     return b'', b'sourceinsinkerror', str('Command: '+str(knime_command)+'\n Error: Source found in sink\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
             except FileNotFoundError as e:
                 return b'', b'sourceinsinknotfounderror', str('Command: '+str(knime_command)+'\n Error: '+str(e)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+            ### handle timeout
+            if is_timeout:
+                if not is_results_empty and partial_retro:
+                    with open(tmpOutputFolder+'/results.csv', 'rb') as op:
+                        results_csv = op.read()
+                    return results_csv, b'timeoutwarning', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+                else:
+                    return b'', b'timeouterror', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
             ### if java has an memory issue
             if 'There is insufficient memory for the Java Runtime Environment to continue' in result:
                 if not is_results_empty and partial_retro:
@@ -95,6 +101,7 @@ def run_rp2(source_bytes, sink_bytes, rules_bytes, max_steps, topx=100, dmin=0, 
                     return results_csv, b'memwarning', str('Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
                 else:
                     return b'', b'memerror', str('Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+            ############## IF ALL IS GOOD ##############
             ### csv scope copy to the .dat location
             try:
                 csv_scope = glob.glob(tmpOutputFolder+'/*_scope.csv')
