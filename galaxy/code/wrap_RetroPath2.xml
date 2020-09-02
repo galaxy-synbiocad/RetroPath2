@@ -4,15 +4,11 @@
 		<requirement type="package">requests</requirement>
   </requirements>
   <stdio>
-		<regex match="ERROR:" level="error" />
-		<regex match="WARNING:" level="warning" />
-		<regex match="timeout" level="error" />
-		<regex match="memoryerror" level="error" />
-		<regex match="oserror" level="error" />
-		<regex match="ramerror" level="error" />
+		<regex match="ERROR" level="error" source="both"/>
+		<regex match="WARNING" level="warning" source="both"/>
 	</stdio>
   <command detect_errors="exit_code"><![CDATA[
-		'$__tool_directory__/tool_RetroPath2.py' -sinkfile '$sinkfile' -sourcefile '$sourcefile' -max_steps '$max_steps' -rulesfile_format '$rulesfile.format' -rulesfile '$rulesfile.input_rules' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -server_url '$adv.server_url' -timeout '$adv.timeout' -scope_csv '$scope_csv'
+		'$__tool_directory__/tool_RetroPath2.py' -sinkfile '$sinkfile' -sourcefile '$sourcefile' -max_steps '$max_steps' -rulesfile_format '$rulesfile.format' -rulesfile '$rulesfile.input_rules' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -server_url '$adv.server_url' -timeout '$adv.timeout' -scope_csv '$scope_csv' -partial_retro '$adv.partial_retro'
   ]]></command>
   <inputs>
     <conditional name="rulesfile">
@@ -27,7 +23,6 @@
 		    <param name="input_rules" type="data" format="tar" label="Rules File" />
       </when>
     </conditional>
-		<param name="rulesfile" type="data" format="csv" label="Rules File" />
 		<param name="sinkfile" type="data" format="csv" label="Sink File" />
 		<param name="sourcefile" type="data" format="csv" label="Source File" />
 		<param name="max_steps" type="integer" value="3" label="Maximal Pathway length" />
@@ -38,20 +33,22 @@
       <param name="mwmax_source" type="integer" value="1000" label="Molecular weight of source (Da)" />
 			<param name="mwmax_cof" type="integer" value="1000" label="Molecular weight of coefficients (Da)" />
 			<param name="server_url" type="text" value="http://retropath2_redis:8888/REST" label="Server URL" />
-			<param name="timeout" type="integer" value="30" label="Timeout (min)" />
+			<param name="timeout" type="integer" value="90" label="Timeout (min)" />
+      <param name="partial_retro" type="boolean" truevalue="True" falsevalue="False" checked="false" label="Return partial results" />
 		</section>
   </inputs>
   <outputs>
 		<data name="scope_csv" format="csv" label="RetroPath pathways" />
   </outputs>
   <help><![CDATA[
-Retropath2.0 docker
+Retropath2.0
 ===================
 
 
-* Docker image: `brsynth/retroapth2-redis <https://hub.docker.com/r/brsynth/retropath2-redis>`_
+This tool performs retrosynthesis search for possible metabolic routes between a source molecule and a collection of sink molecules. It takes as input, files from RetroRules, source and sink compounds (can be generated as explained in SynBioCAD Utilities), and the maximal pathway length (i.e; the number of steps). Only a single source molecule is processed at this time.
+Using Advanced Options, you can define the maximum number of compounds to keep for a next iteration (TopX), the minimal (dmin) and maximal (dmax) diameter for the reaction rules, and the maximum molecular weight of the source.
+The Server URL is the IP address of the tools. By default, a local address is mentioned but external servers may be specified here too. Lastly, the Timeout parameter can be used to increase the maximum execution time of the tool. This limit is set for the server version of the tool. Another internal limit is set for the RAM usage upon deployment. This is designed to limit the potential combinatorial explosion that may occur with RetroPath2.0 and enable the tool to be deployed on a server for numerous users to access it simultaneously. 
 
-Perform retrosynthesis search of possible metabolic routes between a source molecule and a collection of sink molecules. Docker implementation of the KNIME retropath2.0 workflow. Takes for input the minimal (dmin) and maximal (dmax) diameter for the reaction rules and the maximal path length (maxSteps). The docker mounts a local folder and expects the following files: rules.csv, sink.csv and source.csv. We only support a single source molecule at this time. 
 
 Input
 -----
@@ -87,6 +84,12 @@ Version
 
 v8.0
 
+Project Links
+---------------------
+
+* `GitHub <https://github.com/Galaxy-SynBioCAD/RetroPath2>`_
+* `Docker <https://hub.docker.com/r/brsynth/retropath2>`_
+
 Authors
 -------
 
@@ -96,6 +99,7 @@ Authors
 
 License
 -------
+
 
 This project is licensed under the MIT License - see the `LICENSE.md <LICENSE.md>`_ file for details
 
