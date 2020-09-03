@@ -97,7 +97,6 @@ class RestQuery(Resource):
                 return Response('Redis job failed \n '+str(result), status=500)
             time.sleep(2.0)
         ###########################
-        status_message = 'Successfull execution'
         if result[1]==b'timeouterror' or result[1]==b'timeoutwarning':
             #for debugging
             #app.logger.warning(result[2])
@@ -172,7 +171,21 @@ class RestQuery(Resource):
                 return Response('RetroPath2.0 could not complete successfully', status=404)
         elif result[1]==b'noresulterror':
             app.logger.error('Empty results')
-            return Response('RetroPath2.0 could not find any solutions', status=404)
+            return Response('RetroPath2.0 did find any solutions', status=404)
+        elif result[1]==b'noerror':
+            status_message = 'Successfull execution'
+            scope_csv = io.BytesIO()
+            scope_csv.write(result[0])
+            ###### IMPORTANT ######
+            scope_csv.seek(0)
+            #######################
+            response = make_response(send_file(scope_csv, as_attachment=True, attachment_filename='rp2_pathways.csv', mimetype='text/csv'))
+            response.headers['status_message'] = status_message
+            return response
+        else:
+            app.logger.error('Could not recognise the status message returned: '+str(results[1]))
+            return Response('Could not recognise the status message returned: '+str(results[1]), status=500)
+
 
 
 api.add_resource(RestApp, '/REST')
