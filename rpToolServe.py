@@ -102,10 +102,10 @@ class RestQuery(Resource):
             #app.logger.warning(result[2])
             if not partial_retro:
                 app.logger.error('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
-                return Response('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool', status=408)
+                return Response('Timeout of RetroPath2.0--Try increasing the timeout limit of the tool', status=408)
             else:
                 if result[0]==b'':
-                    return Response('Timeout of RetroPath2.0 caused it to not find any solutions', status=404)
+                    return Response('Timeout caused RetroPath2.0 to not find any solutions', status=404)
                 else:
                     app.logger.warning('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
                     app.logger.warning('Returning partial results') 
@@ -171,7 +171,7 @@ class RestQuery(Resource):
                 return Response('RetroPath2.0 could not complete successfully', status=404)
         elif result[1]==b'noresulterror':
             app.logger.error('Empty results')
-            return Response('RetroPath2.0 did find any solutions', status=404)
+            return Response('RetroPath2.0 cannot not find any solutions--Try reducing the complexity of the problem', status=404)
         elif result[1]==b'noerror':
             status_message = 'Successfull execution'
             scope_csv = io.BytesIO()
