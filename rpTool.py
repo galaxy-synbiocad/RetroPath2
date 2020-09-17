@@ -83,18 +83,11 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                 if count>1:
                     is_results_empty = False
             except (IndexError, FileNotFoundError) as e:
-                logger.warning('No results.csv file')
-            ### handle timeout
-            if is_timeout:
-                if not is_results_empty and partial_retro:
-                    logger.warning('Timeout from retropath2.0 ('+str(timeout)+' minutes)')
-                    with open(tmpOutputFolder+'/results.csv', 'rb') as op:
-                        results_csv = op.read()
-                    logger.warning('Passing the results file instead')
-                    return results_csv, b'timeoutwarning', str('Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
-                else:
-                    logger.error('Timeout from retropath2.0 ('+str(timeout)+' minutes)')
-                    return b'', b'timeouterror', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+                #logger.warning('No results.csv file')
+                pass
+            ########################################################################
+            ##################### HANDLE all the different cases ###################
+            ########################################################################
             ### if source is in sink. Note making sure that it contains more than the default first line
             try:
                 count = 0
@@ -109,6 +102,16 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                 logger.error('Cannot find source-in-sink.csv file')
                 logger.error(e)
                 return b'', b'sourceinsinknotfounderror', str('Command: '+str(knime_command)+'\n Error: '+str(e)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+            ### handle timeout
+            if is_timeout:
+                if not is_results_empty and partial_retro:
+                    logger.warning('Timeout from retropath2.0 ('+str(timeout)+' minutes)')
+                    with open(tmpOutputFolder+'/results.csv', 'rb') as op:
+                        results_csv = op.read()
+                    return results_csv, b'timeoutwarning', str('Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+                else:
+                    logger.error('Timeout from retropath2.0 ('+str(timeout)+' minutes)')
+                    return b'', b'timeouterror', str('Command: '+str(knime_command)+'\n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
             ### if java has an memory issue
             if 'There is insufficient memory for the Java Runtime Environment to continue' in result:
                 if not is_results_empty and partial_retro:
@@ -120,6 +123,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                 else:
                     logger.error('RetroPath2.0 does not have sufficient memory to continue')
                     return b'', b'memerror', str('Command: '+str(knime_command)+'\n Error: Memory error \n tmpOutputFolder: '+str(glob.glob(tmpOutputFolder+'/*'))).encode('utf-8')
+            ############## IF ALL IS GOOD ##############
             ### csv scope copy to the .dat location
             try:
                 csv_scope = glob.glob(tmpOutputFolder+'/*_scope.csv')

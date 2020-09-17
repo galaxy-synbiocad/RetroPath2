@@ -13,6 +13,7 @@ import tempfile
 import tarfile
 import glob
 import shutil
+import os
 
 sys.path.insert(0, '/home/')
 import rpTool
@@ -67,6 +68,16 @@ if __name__ == "__main__":
     else:
         logging.error('Cannot interpret partial_retro: '+str(params.partial_retro))
         exit(1)
+    if not os.path.exists(params.scope_csv):
+        logging.error('The scope file cannot be found: '+str(params.scope_csv))
+        exit(1)
+    if not os.path.exists(params.rulesfile):
+        logging.error('The rules file cannot be found: '+str(params.rulesfile))
+        exit(1)
+    if not os.path.exists(params.sinkfile):
+        logging.error('The sink file cannot be found: '+str(params.sinkfile))
+        exit(1)
+    ########## handle the call ###########
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
             logging.debug('Rules file: '+str(params.rulesfile))
@@ -102,23 +113,66 @@ if __name__ == "__main__":
                                 params.mwmax_cof,
                                 params.timeout,
                                 partial_retro)
-        if result[1]==b'timeouterror':
-            logging.error('Timeout of RetroPath2.0')
+        ###########################
+        if result[1]==b'timeouterror' or result[1]==b'timeoutwarning':
+            if not partial_retro:
+                logging.error('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
+            else:
+                if result[0]==b'':
+                    logging.error('Timeout caused RetroPath2.0 to not find any solutions')
+                    exit(1)
+                else:
+                    logging.warning('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
+                    logging.warning('Returning partial results')
+                    with open(params.scope_csv, 'wb') as scope_csv:
+                        scope_csv.write(result[0])
+                    exit(0)
+        elif result[1]==b'memwarning' or result[1]==b'memerror':
+            if not partial_retro:
+                logging.error('RetroPath2.0 has exceeded its memory limit')
+                exit(0)
+            else:
+                if result[0]==b'':
+                    logging.error('Memory limit reached by RetroPath2.0 caused it to not find any solutions')
+                    exit[0]
+                else:
+                    logging.warning('RetroPath2.0 has exceeded its memory limit')
+                    logging.warning('Returning partial results')
+                    with open(params.scope_csv, 'wb') as scope_csv:
+                        scope_csv.write(result[0])
+                    exit(0)
+        elif result[1]==b'sourceinsinkerror':
+            logging.error('Source exists in the sink')
             exit(1)
-        elif result[1]==b'memoryerror':
+        elif result[1]==b'sourceinsinknotfounderror':
+            logging.error('Cannot find the sink-in-source file')
+            exit(1)
+        elif result[1]==b'ramerror' or result[1]==b'ramwarning':
             logging.error('Memory allocation error')
             exit(1)
-        elif result[1]==b'oserror':
-            logging.error('rp2paths has generated an OS error')
+        elif result[1]==b'oserror' or result[1]==b'oswarning':
+            logging.error('RetroPath2.0 has generated an OS error')
             exit(1)
-        elif result[1]==b'ramerror':
-            logging.error('Could not setup a RAM limit')
-            exit(1)
-        elif result[1]==b'timeoutwarning' or result[1]==b'memwarning' or result[1]==b'noresultwarning' or result[1]==b'oswarning' or result[1]==b'ramwarning':
-            logging.warning(result[2])
-            logging.warning('Returning partial results')
-        if result[0]==b'':
+        elif result[1]==b'noresultwarning':
+            if partial_retro:
+                if result[0]==b'':
+                    logging.error('No results warning caused it to return no results')
+                    exit(1)
+                else:
+                    logging.warning('RetroPath2.0 did not complete successfully')
+                    logging.warning('Returning partial results')
+                    with open(params.scope_csv, 'wb') as scope_csv:
+                        scope_csv.write(result[0])
+            else:
+                logging.error('RetroPath2.0 did not complete successfully')
+                exit(1)
+        elif result[1]==b'noresulterror':
             logging.error('Empty results')
             exit(1)
-        with open(params.scope_csv, 'wb') as scope_csv:
-            scope_csv.write(result[0])
+        elif result[1]==b'noerror':
+            logging.info('Successfull execution')
+            with open(params.scope_csv, 'wb') as scope_csv:
+                scope_csv.write(result[0])
+        else:
+            logging.error('Could not recognise the status message returned: '+str(results[1]))
+            exit(1)
