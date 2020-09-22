@@ -79,7 +79,7 @@ if __name__ == "__main__":
         exit(1)
     ########## handle the call ###########
     with tempfile.TemporaryDirectory() as tmpInputFolder:
-        if params.rulesfile_format=='tsv':
+        if params.rulesfile_format=='csv':
             logging.debug('Rules file: '+str(params.rulesfile))
             rulesfile = tmpInputFolder+'/rules.csv'
             shutil.copy(params.rulesfile, rulesfile)

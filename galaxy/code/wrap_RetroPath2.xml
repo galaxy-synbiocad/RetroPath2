@@ -18,10 +18,10 @@
     <conditional name="rulesfile">
       <param name="format" type="select" label="Rules input format">
         <option value="tar" type="text" selected="true">TAR</option>
-        <option value="tsv" type="text">TSV</option>
+        <option value="csv" type="text">CSV</option>
       </param>
-      <when value="tsv">
-		    <param name="input_rules" type="data" format="tsv" label="Rules File" />
+      <when value="csv">
+		    <param name="input_rules" type="data" format="csv" label="Rules File" />
       </when>
       <when value="tar">
 		    <param name="input_rules" type="data" format="tar" label="Rules File" />
