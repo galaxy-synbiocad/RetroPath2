@@ -27,8 +27,8 @@
 		    <param name="input_rules" type="data" format="tar" label="Rules File" />
       </when>
     </conditional>
-		<param name="sinkfile" type="data" format="tsv" label="Sink File" />
-		<param name="sourcefile" type="data" format="tsv" label="Source File" />
+		<param name="sinkfile" type="data" format="csv" label="Sink File" />
+		<param name="sourcefile" type="data" format="csv" label="Source File" />
 		<param name="max_steps" type="integer" value="3" label="Pathway length" />
 		<section name="adv" title="Advanced Options" expanded="false">
 			<param name="topx" type="integer" value="100" label="TopX" />
