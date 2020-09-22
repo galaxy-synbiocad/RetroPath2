@@ -68,9 +68,11 @@ if __name__ == "__main__":
     else:
         logging.error('Cannot interpret partial_retro: '+str(params.partial_retro))
         exit(1)
+    '''
     if not os.path.exists(params.scope_csv):
         logging.error('The scope file cannot be found: '+str(params.scope_csv))
         exit(1)
+    '''
     if not os.path.exists(params.rulesfile):
         logging.error('The rules file cannot be found: '+str(params.rulesfile))
         exit(1)
