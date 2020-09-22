@@ -18,17 +18,17 @@
     <conditional name="rulesfile">
       <param name="format" type="select" label="Rules input format">
         <option value="tar" type="text" selected="true">TAR</option>
-        <option value="csv" type="text">CSV</option>
+        <option value="tsv" type="text">TSV</option>
       </param>
-      <when value="csv">
-		    <param name="input_rules" type="data" format="csv" label="Rules File" />
+      <when value="tsv">
+		    <param name="input_rules" type="data" format="tsv" label="Rules File" />
       </when>
       <when value="tar">
 		    <param name="input_rules" type="data" format="tar" label="Rules File" />
       </when>
     </conditional>
-		<param name="sinkfile" type="data" format="csv" label="Sink File" />
-		<param name="sourcefile" type="data" format="csv" label="Source File" />
+		<param name="sinkfile" type="data" format="tsv" label="Sink File" />
+		<param name="sourcefile" type="data" format="tsv" label="Source File" />
 		<param name="max_steps" type="integer" value="3" label="Pathway length" />
 		<section name="adv" title="Advanced Options" expanded="false">
 			<param name="topx" type="integer" value="100" label="TopX" />
