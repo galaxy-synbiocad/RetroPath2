@@ -35,9 +35,9 @@ def limit_virtual_memory():
 def run_rp2(source_bytes, sink_bytes, rules_bytes, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, partial_retro=False):
     """Call the KNIME RetroPath2.0 workflow
 
-    :param source_bytes: The path to the source file
-    :param sink_bytes: The path to the sink file
-    :param rules_bytes: The path to the rules file
+    :param source_bytes: The source file as bytes
+    :param sink_bytes: The sink file as bytes
+    :param rules_bytes: The rules file as bytes
     :param max_steps: The maximal number of steps
     :param topx: The top number of reaction rules to keep at each iteraction (Default: 100)
     :param dmin: The minimum diameter of the reaction rules (Default: 0)
@@ -48,18 +48,18 @@ def run_rp2(source_bytes, sink_bytes, rules_bytes, max_steps, topx=100, dmin=0, 
     :param partial_retro: Return partial results if the execution is interrupted for any reason (Default: False)
     :param logger: Logger object (Default: None)
 
-    :param source_bytes: bytes
-    :param sink_bytes: bytes
-    :param rules_bytes: bytes
-    :param max_steps: int
-    :param topx: int
-    :param dmin: int
-    :param dmax: int
-    :param mwmax_source: int
-    :param mwmax_cof: int
-    :param timeout: int
-    :param partial_retro: bool
-    :param logger: logging
+    :type source_bytes: bytes
+    :type sink_bytes: bytes
+    :type rules_bytes: bytes
+    :type max_steps: int
+    :type topx: int
+    :type dmin: int
+    :type dmax: int
+    :type mwmax_source: int
+    :type mwmax_cof: int
+    :type timeout: int
+    :type partial_retro: bool
+    :type logger: logging
 
     :rtype: tuple
     :return: tuple of bytes with the results, the status message, the KNIME command used
