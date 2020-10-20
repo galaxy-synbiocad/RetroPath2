@@ -43,19 +43,19 @@ def main(sinkfile,
     :param timeout: The timeout of the function in minutes (Default: 90)
     :param partial_retro: Return partial results if the execution is interrupted for any reason (Default: False)
 
-    :param sinkfile: str
-    :param sourcefile: str
-    :param max_steps: int
-    :param rulesfile: str
-    :param rulesfile_format: str
-    :param scope_csv: str
-    :param topx: int
-    :param dmin: int
-    :param dmax: int
-    :param mwmax_source: int
-    :param mwmax_cof: int
-    :param timeout: int
-    :param partial_retro: bool
+    :type sinkfile: str
+    :type sourcefile: str
+    :type max_steps: int
+    :type rulesfile: str
+    :type rulesfile_format: str
+    :type scope_csv: str
+    :type topx: int
+    :type dmin: int
+    :type dmax: int
+    :type mwmax_source: int
+    :type mwmax_cof: int
+    :type timeout: int
+    :type partial_retro: bool
 
     :rtype: None
     :return: None
