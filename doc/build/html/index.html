@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RetroPath2’s Redis Documentation &#8212; RetroPath2.0_redis v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="retropath2-s-redis-documentation">
+<h1>RetroPath2’s Redis Documentation<a class="headerlink" href="#retropath2-s-redis-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Welcome to RetroPath2’s Redis documentation. This project wraps the RetroPath2.0 <a class="reference external" href="https://www.knime.com/">KNIME</a> workflow hosted on <a class="reference external" href="https://www.myexperiment.org/workflows/4987.html">MyExperiment</a> into a Redis docker that may be called locally. The project is intended to be used to be used as a service that is called by multiple users and allows for limits of the number of users that call RetroPath2.0 simultaneously.</p>
+<p>The Redis service is used as a queuing service that allows for a number of users to wait for the x number of RetroPath2.0 instances. This is controlled by modifying the supervisor.conf file at the following line: numprocs=2.</p>
+<p>The limit of RAM usage can also be defined by changing the following line of rpTool.py: MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB.</p>
+<p>In both cases the docker must be rebuild if changed, using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker build -t brsynth/retropath2-redis .
+</pre></div>
+</div>
+<p>The service must be ran, and can be done using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -p <span class="m">8888</span>:8888 brsynth/retropath2-redis
+</pre></div>
+</div>
+<p>Where the public port number can be changed by the first instance of the 8888 number above.</p>
+<p>To call the rest service, the easiest way is to use the galaxy/code/tool_RetroPath2.py file in the following fashion:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python tool_RetroPath2.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps <span class="m">3</span> -scope_csv test_scope.csv
+</pre></div>
+</div>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<dl class="py class">
+<dt id="rpTool.run_rp2">
+<em class="property">class </em><code class="sig-prename descclassname">rpTool.</code><code class="sig-name descname">run_rp2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_bytes</span></em>, <em class="sig-param"><span class="n">sink_bytes</span></em>, <em class="sig-param"><span class="n">rules_bytes</span></em>, <em class="sig-param"><span class="n">max_steps</span></em>, <em class="sig-param"><span class="n">topx</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">dmin</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">dmax</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">mwmax_source</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">mwmax_cof</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">partial_retro</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#rpTool.run_rp2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the KNIME RetroPath2.0 workflow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_bytes</strong> – The path to the source file</p></li>
+<li><p><strong>sink_bytes</strong> – The path to the sink file</p></li>
+<li><p><strong>rules_bytes</strong> – The path to the rules file</p></li>
+<li><p><strong>max_steps</strong> – The maximal number of steps</p></li>
+<li><p><strong>topx</strong> – The top number of reaction rules to keep at each iteraction (Default: 100)</p></li>
+<li><p><strong>dmin</strong> – The minimum diameter of the reaction rules (Default: 0)</p></li>
+<li><p><strong>dmax</strong> – The miximum diameter of the reaction rules (Default: 1000)</p></li>
+<li><p><strong>mwmax_source</strong> – The maximal molecular weight of the intermediate compound (Default: 1000)</p></li>
+<li><p><strong>mwmax_cof</strong> – The coefficient of the molecular weight of the intermediate compound (Default: 1000)</p></li>
+<li><p><strong>timeout</strong> – The timeout of the function in minutes (Default: 30)</p></li>
+<li><p><strong>partial_retro</strong> – Return partial results if the execution is interrupted for any reason (Default: False)</p></li>
+<li><p><strong>logger</strong> – Logger object (Default: None)</p></li>
+<li><p><strong>source_bytes</strong> – bytes</p></li>
+<li><p><strong>sink_bytes</strong> – bytes</p></li>
+<li><p><strong>rules_bytes</strong> – bytes</p></li>
+<li><p><strong>max_steps</strong> – int</p></li>
+<li><p><strong>topx</strong> – int</p></li>
+<li><p><strong>dmin</strong> – int</p></li>
+<li><p><strong>dmax</strong> – int</p></li>
+<li><p><strong>mwmax_source</strong> – int</p></li>
+<li><p><strong>mwmax_cof</strong> – int</p></li>
+<li><p><strong>timeout</strong> – int</p></li>
+<li><p><strong>partial_retro</strong> – bool</p></li>
+<li><p><strong>logger</strong> – logging</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tuple of bytes with the results, the status message, the KNIME command used</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="rpToolServe.RestQuery">
+<em class="property">class </em><code class="sig-prename descclassname">rpToolServe.</code><code class="sig-name descname">RestQuery</code><a class="headerlink" href="#rpToolServe.RestQuery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_restful.Resource</span></code></p>
+<p>Class containing the REST requests for RP2</p>
+<dl class="py method">
+<dt id="rpToolServe.RestQuery.as_view">
+<em class="property">classmethod </em><code class="sig-name descname">as_view</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">class_args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">class_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#rpToolServe.RestQuery.as_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the class into an actual view function that can be used
+with the routing system.  Internally this generates a function on the
+fly which will instantiate the <code class="xref py py-class docutils literal notranslate"><span class="pre">View</span></code> on each request and call
+the <a class="reference internal" href="#rpToolServe.RestQuery.dispatch_request" title="rpToolServe.RestQuery.dispatch_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dispatch_request()</span></code></a> method on it.</p>
+<p>The arguments passed to <a class="reference internal" href="#rpToolServe.RestQuery.as_view" title="rpToolServe.RestQuery.as_view"><code class="xref py py-meth docutils literal notranslate"><span class="pre">as_view()</span></code></a> are forwarded to the
+constructor of the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="rpToolServe.RestQuery.dispatch_request">
+<code class="sig-name descname">dispatch_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#rpToolServe.RestQuery.dispatch_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subclasses have to override this method to implement the
+actual view function code.  This method is called with all
+the arguments from the URL rule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="rpToolServe.RestQuery.post">
+<code class="sig-name descname">post</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rpToolServe.RestQuery.post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the REST request using the POST method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Response</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Flask Response object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">RetroPath2.0_redis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Melchior du Lac.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
