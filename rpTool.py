@@ -24,6 +24,8 @@ MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
 #
 #
 def limit_virtual_memory():
+    """Limit the virtual of the subprocess call
+    """
     resource.setrlimit(resource.RLIMIT_AS, (MAX_VIRTUAL_MEMORY, resource.RLIM_INFINITY))
 
 
@@ -31,6 +33,37 @@ def limit_virtual_memory():
 #
 #
 def run_rp2(source_bytes, sink_bytes, rules_bytes, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, partial_retro=False):
+    """Call the KNIME RetroPath2.0 workflow
+
+    :param source_bytes: The path to the source file
+    :param sink_bytes: The path to the sink file
+    :param rules_bytes: The path to the rules file
+    :param max_steps: The maximal number of steps
+    :param topx: The top number of reaction rules to keep at each iteraction (Default: 100)
+    :param dmin: The minimum diameter of the reaction rules (Default: 0)
+    :param dmax: The miximum diameter of the reaction rules (Default: 1000)
+    :param mwmax_source: The maximal molecular weight of the intermediate compound (Default: 1000)
+    :param mwmax_cof: The coefficient of the molecular weight of the intermediate compound (Default: 1000)
+    :param timeout: The timeout of the function in minutes (Default: 30)
+    :param partial_retro: Return partial results if the execution is interrupted for any reason (Default: False)
+    :param logger: Logger object (Default: None)
+
+    :param source_bytes: bytes
+    :param sink_bytes: bytes
+    :param rules_bytes: bytes
+    :param max_steps: int
+    :param topx: int
+    :param dmin: int
+    :param dmax: int
+    :param mwmax_source: int
+    :param mwmax_cof: int
+    :param timeout: int
+    :param partial_retro: bool
+    :param logger: logging
+
+    :rtype: tuple
+    :return: tuple of bytes with the results, the status message, the KNIME command used
+    """
     is_timeout = False
     is_results_empty = True
     ### run the KNIME RETROPATH2.0 workflow
