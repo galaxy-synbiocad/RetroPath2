@@ -116,7 +116,8 @@ http://update.knime.com/community-contributions/trusted/3.6 \
 org.knime.features.datageneration.feature.group,\
 jp.co.infocom.cheminfo.marvin.feature.feature.group,\
 org.knime.features.python.feature.group,\
-org.rdkit.knime.feature.feature.group \
+org.rdkit.knime.source.feature.feature.group,\
+#org.rdkit.knime.feature.feature.group \ --> not sure why this is not working
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
 ##################### FLASK ###################
