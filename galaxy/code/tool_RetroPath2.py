@@ -18,7 +18,8 @@ import os
 sys.path.insert(0, '/home/')
 import rpTool
 
-logging.basicConfig(
+logging.basicConfig( 
+    #level=logging.DEBUG,
     #level=logging.WARNING,
     level=logging.ERROR,
     format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',

@@ -83,7 +83,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                 if count>1:
                     is_results_empty = False
             except (IndexError, FileNotFoundError) as e:
-                #logger.warning('No results.csv file')
+                logger.debug('No results.csv file')
                 pass
             ########################################################################
             ##################### HANDLE all the different cases ###################
