@@ -1,6 +1,5 @@
 FROM ubuntu:18.04
 
-#ENV DOWNLOAD_URL http://download.knime.org/analytics-platform/linux/knime_3.6.2.linux.gtk.x86_64.tar.gz
 ENV DOWNLOAD_URL https://download.knime.org/analytics-platform/linux/knime_4.2.2.linux.gtk.x86_64.tar.gz
 ENV INSTALLATION_DIR /usr/local
 ENV KNIME_DIR $INSTALLATION_DIR/knime
@@ -80,18 +79,10 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 
 #FROM ibisba/knime-base:3.6.2
 
-############################### JOAN rpData ##############################
+############################### Workflow ##############################
 
-#stable version
-#ENV RETROPATH_VERSION 8
-#new version 
 ENV RETROPATH_VERSION 9
 ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_-_a_retrosynthesis_workflow_with_tutorial_and_example_data-v${RETROPATH_VERSION}.zip
-# NOTE: Update sha256sum for each release
-#TODO: update the SHA356 for the new version of RetroPath2
-#version 8
-#ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
-#version 9
 ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
 
 RUN apt-get --quiet update && \
@@ -107,8 +98,6 @@ RUN curl -v -L -o RetroPath2_0.zip $RETROPATH_URL && sha256sum RetroPath2_0.zip 
 RUN unzip RetroPath2_0.zip && mv RetroPath2.0/* /home/
 RUN rm RetroPath2_0.zip
 
-#####################################################################
-
 #install the additional packages required for running retropath KNIME workflow
 RUN /usr/local/knime/knime -application org.eclipse.equinox.p2.director -nosplash -consolelog \
 -r http://update.knime.org/community-contributions/trunk,\
@@ -121,11 +110,15 @@ org.knime.features.python.feature.group,\
 org.rdkit.knime.feature.feature.group \
 -bundlepool /usr/local/knime/ -d /usr/local/knime/
 
+############################# Files and Tests #############################
+
 COPY rpTool.py /home/
 COPY galaxy/code/tool_RetroPath2.py /home/
+COPY test.tar.xz /home/
 
-#debug
-#RUN mkdir /home/tmp_output/
-#COPY test/sink.csv /home/tmp_output/
-#COPY test/source.csv /home/tmp_output/
-#COPY test/rules.tar /home/tmp_output/rules.dat
+#test
+ENV RP2_RESULTS_SHA256 7428ebc0c25d464fbfdd6eb789440ddc88011fb6fc14f4ce7beb57a6d1fbaec2
+RUN tar xf /home/test.tar.xz -C /home/ 
+RUN /home/tool_RetroPath2.py -sinkfile test/sink.csv -sourcefile test/source.csv -rulesfile test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
+RUN echo "$RP2_RESULTS_SHA256 test_scope.csv" | sha256sum --check
+
