@@ -23,6 +23,15 @@ KPATH = '/home/mdulac/knime_3.6.1/knime'
 RP_WORK_PATH = 'RetroPath2.0.knwf'
 '''
 
+logging.basicConfig(
+    #level=logging.DEBUG,
+    #level=logging.WARNING,
+    level=logging.ERROR,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%d-%m-%Y %H:%M:%S',
+)
+
+
 #MAX_VIRTUAL_MEMORY = 20000*1024*1024 # 20 GB -- define what is the best
 MAX_VIRTUAL_MEMORY = 30000*1024*1024 # 30 GB -- define what is the best
 
@@ -66,9 +75,9 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
             #(result, error) = commandObj.communicate()
             result = result.decode('utf-8')
             error = error.decode('utf-8')
-            logger.info('RetroPath2.0 results message: '+str(result))
-            logger.info('RetroPath2.0 error message: '+str(error))
-            logger.info('Output folder: '+str(glob.glob(tmpOutputFolder+'/*')))
+            logger.debug('RetroPath2.0 results message: '+str(result))
+            logger.debug('RetroPath2.0 error message: '+str(error))
+            logger.debug('Output folder: '+str(glob.glob(tmpOutputFolder+'/*')))
             #check to see if the results.csv is empty
             try:
                 count = 0
@@ -79,7 +88,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
                 if count>1:
                     is_results_empty = False
             except (IndexError, FileNotFoundError) as e:
-                #logger.warning('No results.csv file')
+                logger.debug('No results.csv file')
                 pass
             ########################################################################
             ##################### HANDLE all the different cases ###################

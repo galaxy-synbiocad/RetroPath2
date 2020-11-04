@@ -1,7 +1,7 @@
 <tool id="retropath2" name="RetroPath2.0" version="8.0">
   <description>Build a reaction network from a set of source compounds to a set of sink compounds</description>
   <requirements>
-		<container type="docker">brsynth/retropath2-standalone:dev</container>
+		<container type="docker">brsynth/retropath2-standalone</container>
   </requirements>
   <stdio>
 		<regex match="ERROR:" level="error" />

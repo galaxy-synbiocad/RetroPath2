@@ -18,19 +18,16 @@ import os
 sys.path.insert(0, '/home/')
 import rpTool
 
-logging.basicConfig(
-    level=logging.WARNING,
+logging.basicConfig( 
+    #level=logging.DEBUG,
+    #level=logging.WARNING,
+    level=logging.ERROR,
     format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
     datefmt='%d-%m-%Y %H:%M:%S',
 )
 
-logging.disable(logging.INFO)
-#logging.disable(logging.WARNING)
-
 
 if __name__ == "__main__":
-    #### used to pass the logger to the 
-    logger = logging.getLogger(__name__)
     #### WARNING: as it stands one can only have a single source molecule
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
     parser.add_argument('-sinkfile', type=str)
@@ -72,9 +69,11 @@ if __name__ == "__main__":
     else:
         logging.error('Cannot interpret partial_retro: '+str(params.partial_retro))
         exit(1)
+    '''
     if not os.path.exists(params.scope_csv):
         logging.error('The scope file cannot be found: '+str(params.scope_csv))
         exit(1)
+    '''
     if not os.path.exists(params.rulesfile):
         logging.error('The rules file cannot be found: '+str(params.rulesfile))
         exit(1)
@@ -84,10 +83,10 @@ if __name__ == "__main__":
     ########## handle the call ###########
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
-            logging.info('Rules file: '+str(params.rulesfile))
+            logging.debug('Rules file: '+str(params.rulesfile))
             rulesfile = tmpInputFolder+'/rules.csv'
             shutil.copy(params.rulesfile, rulesfile)
-            logging.info('Rules file: '+str(rulesfile))
+            logging.debug('Rules file: '+str(rulesfile))
         elif params.rulesfile_format=='tar':
             with tarfile.open(params.rulesfile) as rf:
                 rf.extractall(tmpInputFolder)
@@ -102,8 +101,12 @@ if __name__ == "__main__":
         else:
             logging.error('Cannot detect the rules_format: '+str(params.rulesfile_format))
             exit(1)
-        result = rpTool.run_rp2(params.sourcefile,
-                                params.sinkfile,
+        sourcefile = tmpInputFolder+'/source.csv'
+        shutil.copy(params.sourcefile, sourcefile)
+        sinkfile = tmpInputFolder+'/sink.csv'
+        shutil.copy(params.sinkfile, sinkfile)
+        result = rpTool.run_rp2(sourcefile,
+                                sinkfile,
                                 rulesfile,
                                 params.max_steps,
                                 params.topx,
