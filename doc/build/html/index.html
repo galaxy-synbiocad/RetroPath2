@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>RetroPath2’s Documentation &#8212; RetroPath2 v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="retropath2-s-documentation">
+<h1>RetroPath2’s Documentation<a class="headerlink" href="#retropath2-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Welcome to RetroPath2’s documentation. This project wraps the RetroPath2.0 <a class="reference external" href="https://www.knime.com/">KNIME</a> workflow hosted on <a class="reference external" href="https://www.myexperiment.org/workflows/4987.html">MyExperiment</a> into a docker that may be called locally.</p>
+<p>First build the docker using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker build -t brsynth/rpextractsink-standalone:v2 .
+</pre></div>
+</div>
+<p>To call the docker locally you can use the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python run.py -sinkfile /path/to/file -sourcefile /path/to/file -rulesfile /path/to/file -rulesfile_format csv -scope_csv /path/to/output -max_steps <span class="m">10</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<dl class="class">
+<dt id="rpTool.run_rp2">
+<em class="property">class </em><code class="descclassname">rpTool.</code><code class="descname">run_rp2</code><a class="headerlink" href="#rpTool.run_rp2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the KNIME RetroPath2.0 workflow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_path</strong> – The path to the source file</p></li>
+<li><p><strong>sink_path</strong> – The path to the sink file</p></li>
+<li><p><strong>rules_path</strong> – The path to the rules file</p></li>
+<li><p><strong>max_steps</strong> – The maximal number of steps</p></li>
+<li><p><strong>topx</strong> – The top number of reaction rules to keep at each iteraction (Default: 100)</p></li>
+<li><p><strong>dmin</strong> – The minimum diameter of the reaction rules (Default: 0)</p></li>
+<li><p><strong>dmax</strong> – The miximum diameter of the reaction rules (Default: 1000)</p></li>
+<li><p><strong>mwmax_source</strong> – The maximal molecular weight of the intermediate compound (Default: 1000)</p></li>
+<li><p><strong>mwmax_cof</strong> – The coefficient of the molecular weight of the intermediate compound (Default: 1000)</p></li>
+<li><p><strong>timeout</strong> – The timeout of the function in minutes (Default: 30)</p></li>
+<li><p><strong>partial_retro</strong> – Return partial results if the execution is interrupted for any reason (Default: False)</p></li>
+<li><p><strong>logger</strong> – Logger object (Default: None)</p></li>
+<li><p><strong>source_path</strong> – str</p></li>
+<li><p><strong>sink_path</strong> – str</p></li>
+<li><p><strong>rules_path</strong> – str</p></li>
+<li><p><strong>max_steps</strong> – int</p></li>
+<li><p><strong>topx</strong> – int</p></li>
+<li><p><strong>dmin</strong> – int</p></li>
+<li><p><strong>dmax</strong> – int</p></li>
+<li><p><strong>mwmax_source</strong> – int</p></li>
+<li><p><strong>mwmax_cof</strong> – int</p></li>
+<li><p><strong>timeout</strong> – int</p></li>
+<li><p><strong>partial_retro</strong> – bool</p></li>
+<li><p><strong>logger</strong> – logging</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tuple of bytes with the results, the status message, the KNIME command used</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="run.main">
+<em class="property">class </em><code class="descclassname">run.</code><code class="descname">main</code><a class="headerlink" href="#run.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the docker to run KNIME RetroPath2.0 workflow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sinkfile</strong> – The path to the sink file</p></li>
+<li><p><strong>sourcefile</strong> – The path to the source file</p></li>
+<li><p><strong>max_steps</strong> – The maximal number of steps</p></li>
+<li><p><strong>rulesfile</strong> – The path to the rules file</p></li>
+<li><p><strong>rulesfile_format</strong> – The file format of the rules. Valid options: tar, csv</p></li>
+<li><p><strong>scope_csv</strong> – The path to the output scope file</p></li>
+<li><p><strong>topx</strong> – The top number of reaction rules to keep at each iteraction (Default: 100)</p></li>
+<li><p><strong>dmin</strong> – The minimum diameter of the reaction rules (Default: 0)</p></li>
+<li><p><strong>dmax</strong> – The miximum diameter of the reaction rules (Default: 1000)</p></li>
+<li><p><strong>mwmax_source</strong> – The maximal molecular weight of the intermediate compound (Default: 1000)</p></li>
+<li><p><strong>mwmax_cof</strong> – The coefficient of the molecular weight of the intermediate compound (Default: 1000)</p></li>
+<li><p><strong>timeout</strong> – The timeout of the function in minutes (Default: 90)</p></li>
+<li><p><strong>partial_retro</strong> – Return partial results if the execution is interrupted for any reason (Default: False)</p></li>
+<li><p><strong>sinkfile</strong> – str</p></li>
+<li><p><strong>sourcefile</strong> – str</p></li>
+<li><p><strong>max_steps</strong> – int</p></li>
+<li><p><strong>rulesfile</strong> – str</p></li>
+<li><p><strong>rulesfile_format</strong> – str</p></li>
+<li><p><strong>scope_csv</strong> – str</p></li>
+<li><p><strong>topx</strong> – int</p></li>
+<li><p><strong>dmin</strong> – int</p></li>
+<li><p><strong>dmax</strong> – int</p></li>
+<li><p><strong>mwmax_source</strong> – int</p></li>
+<li><p><strong>mwmax_cof</strong> – int</p></li>
+<li><p><strong>timeout</strong> – int</p></li>
+<li><p><strong>partial_retro</strong> – bool</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">RetroPath2</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Melchior du Lac.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
