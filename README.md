@@ -34,7 +34,7 @@ Advanced options:
 To build the docker, please run the following command in the project root folder:
 
 ```
-docker build -t brsynth/retropath2-standalone .
+docker build -t brsynth/retropath2-standalone:dev .
 ```
 
 ### Running the test
