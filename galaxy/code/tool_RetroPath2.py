@@ -42,6 +42,7 @@ if __name__ == "__main__":
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
     parser.add_argument('-timeout', type=int, default=90)
+    parser.add_argument('-ram_limit', type=int, default=30)
     parser.add_argument('-partial_retro', type=str, default='False')
     params = parser.parse_args()
     if params.max_steps<=0:
@@ -80,6 +81,9 @@ if __name__ == "__main__":
     if not os.path.exists(params.sinkfile):
         logging.error('The sink file cannot be found: '+str(params.sinkfile))
         exit(1)
+    if params.ram_limit<=0.0:
+        logging.error('Cannot have a RAM limit that is less or equal to 0.0: '+str(params.ram_limit))
+        exit(1)
     ########## handle the call ###########
     with tempfile.TemporaryDirectory() as tmpInputFolder:
         if params.rulesfile_format=='csv':
@@ -115,6 +119,7 @@ if __name__ == "__main__":
                                 params.mwmax_source,
                                 params.mwmax_cof,
                                 params.timeout,
+                                params.ram_limit,
                                 partial_retro)
         ###########################
         if result[1]==b'timeouterror' or result[1]==b'timeoutwarning':

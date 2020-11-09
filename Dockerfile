@@ -119,6 +119,6 @@ COPY sanity_test.tar.xz /home/
 #test
 ENV RP2_RESULTS_SHA256 7428ebc0c25d464fbfdd6eb789440ddc88011fb6fc14f4ce7beb57a6d1fbaec2
 RUN tar xf /home/sanity_test.tar.xz -C /home/ 
-RUN /home/tool_RetroPath2.py -sinkfile sanity_test/sink.csv -sourcefile sanity_test/source.csv -rulesfile sanity_test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
+RUN /home/tool_RetroPath2.py -sinkfile /home/test/sink.csv -sourcefile /home/test/source.csv -rulesfile /home/test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
 RUN echo "$RP2_RESULTS_SHA256 test_scope.csv" | sha256sum --check
 

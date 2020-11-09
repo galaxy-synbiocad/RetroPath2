@@ -38,7 +38,7 @@ def limit_virtual_memory():
     resource.setrlimit(resource.RLIMIT_AS, (MAX_VIRTUAL_MEMORY, resource.RLIM_INFINITY))
 
 
-def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, partial_retro=False, logger=None):
+def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dmax=1000, mwmax_source=1000, mwmax_cof=1000, timeout=30, ram_limit=None, partial_retro=False, logger=None):
     """Call the KNIME RetroPath2.0 workflow
 
     :param source_path: The path to the source file
@@ -51,6 +51,7 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
     :param mwmax_source: The maximal molecular weight of the intermediate compound (Default: 1000)
     :param mwmax_cof: The coefficient of the molecular weight of the intermediate compound (Default: 1000)
     :param timeout: The timeout of the function in minutes (Default: 30)
+    :param ram_limit: Set the upper bound of the RAM usage of the tool (Default: 30 GB)
     :param partial_retro: Return partial results if the execution is interrupted for any reason (Default: False)
     :param logger: Logger object (Default: None)
 
@@ -74,13 +75,12 @@ def run_rp2(source_path, sink_path, rules_path, max_steps, topx=100, dmin=0, dma
         logger = logging.getLogger(__name__)
     logger.debug('Rules file: '+str(rules_path))
     logger.debug('Timeout: '+str(timeout*60.0)+' seconds')
-    '''TODO
     if ram_limit:
-        global MAX_VIRTUAL_MEMORY = ram_limit*1000*1024*1024
+        global MAX_VIRTUAL_MEMORY
+        MAX_VIRTUAL_MEMORY = ram_limit*1000*1024*1024
         logger.debug('RAM limit: '+str(ram_limit)+' GB')
     else:
         logger.debug('RAM limit: 30 GB')
-    '''
     is_timeout = False
     is_results_empty = True
     ### run the KNIME RETROPATH2.0 workflow
