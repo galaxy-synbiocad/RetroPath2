@@ -1,5 +1,5 @@
 *.swp
+test/data/
 OLD/
 RetroPath2.0.knwf
-test/
 __pycache__/

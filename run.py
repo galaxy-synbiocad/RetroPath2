@@ -117,9 +117,9 @@ def main(sinkfile,
             elif 'WARNING' in err_str:
                 print(err_str)
             if not os.path.exists(tmpOutputFolder+'/output.dat'):
-                print('ERROR: Cannot find the output file: '+str(tmpOutputFolder+'/output.dat'))
+                print('ERROR: Cannot find the output file: '+str(os.path.join(tmpOutputFolder, 'output.dat')))
             else:
-                shutil.copy(tmpOutputFolder+'/output.dat', output)
+                shutil.copy(os.path.join(tmpOutputFolder, 'output.dat'), scope_csv)
             container.remove()
         else:
             logging.error('Cannot find one or more of the input files: '+str(sinkfile)+' - '+str(sourcefile)+' - '+str(rulesfile))

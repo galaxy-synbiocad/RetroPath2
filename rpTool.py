@@ -15,13 +15,10 @@ import glob
 import resource
 import tempfile
 
+
 KPATH = '/usr/local/knime/knime'
 RP_WORK_PATH = '/home/RetroPath2.0.knwf'
 
-'''
-KPATH = '/home/mdulac/knime_3.6.1/knime'
-RP_WORK_PATH = 'RetroPath2.0.knwf'
-'''
 
 logging.basicConfig(
     #level=logging.DEBUG,
