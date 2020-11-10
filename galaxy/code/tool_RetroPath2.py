@@ -16,66 +16,82 @@ import tempfile
 import tarfile
 import glob
 
+logging.root.setLevel(logging.NOTSET)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    #level=logging.WARNING,
+    #level=logging.ERROR,
+    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+    datefmt='%d-%m-%Y %H:%M:%S',
+)
+
+
 ##
 #
 #
-def retropathUpload(sinkfile,
-                    sourcefile,
+def retropathUpload(sink_file,
+                    source_file,
                     max_steps,
-                    rulesfile,
-                    rulesfile_format,
-                    topx,
-                    dmin,
-                    dmax,
-                    mwmax_source,
-                    mwmax_cof,
-                    server_url,
+                    rules_file,
+                    rules_file_format,
                     scope_csv,
-                    timeout,
-                    partial_retro):
+                    topx=100,
+                    dmin=0,
+                    dmax=1000,
+                    mwmax_source=1000,
+                    mwmax_cof=1000,
+                    server_url='http://0.0.0.0:8888/REST',
+                    time_out=90,
+                    ram_limit=30,
+                    partial_retro=False):
     with tempfile.TemporaryDirectory() as tmpInputFolder:
-        if rulesfile_format=='tar':
-            with tarfile.open(rulesfile) as rf:
+        if rules_file_format=='tar':
+            with tarfile.open(rules_file) as rf:
                 rf.extractall(tmpInputFolder)
             out_file = glob.glob(tmpInputFolder+'/*.csv')
             if len(out_file)>1:
                 logging.error('Cannot detect file: '+str(glob.glob(tmpInputFolder+'/*.csv')))
                 return False
-            rulesfile = out_file[0]
-        elif rulesfile_format=='csv':
+            rules_file = out_file[0]
+        elif rules_file_format=='csv':
             pass
         else:
-            logging.error('Cannot detect the rules_format: '+str(rulesfile_format))
+            logging.error('Cannot detect the rules_format: '+str(rules_file_format))
         # Post request
-        data = {'max_steps': max_steps,
-                'topx': topx,
-                'dmin': dmin,
-                'dmax': dmax,
-                'mwmax_source': mwmax_source,
-                'mwmax_cof': mwmax_cof,
-                'timeout': timeout,
-                'partial_retro': partial_retro}
-        #logging.debug(data)
-        files = {'sinkfile': open(sinkfile, 'rb'),
-                'sourcefile': open(sourcefile, 'rb'),
-                'rulesfile': open(rulesfile, 'rb'),
-                'data': ('data.json', json.dumps(data))}
-        try:
-            r = requests.post(server_url+'/Query', files=files)
-            r.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            #logging.error(err)
-            logging.error(r.text)
-            return False
-        status = r.headers['status_message']
-        status = status.replace('--', '\n')
-        logging.info(status)
-        #not sure why Galaxy does not detect the logging results, need to print the status message to handle WARNINGS
-        print(status)
-        return_content = r.content
-        logging.info(status)
-        with open(scope_csv, 'wb') as ot:
-            ot.write(return_content)
+        with open(sink_file, 'rb') as si_f:
+            with open(source_file, 'rb') as so_f:
+                with open(rules_file, 'rb') as r_f:
+                    data = {'max_steps': max_steps,
+                            'topx': topx,
+                            'dmin': dmin,
+                            'dmax': dmax,
+                            'mwmax_source': mwmax_source,
+                            'mwmax_cof': mwmax_cof,
+                            'time_out': time_out,
+                            'ram_limit': ram_limit,
+                            'partial_retro': partial_retro}
+                    #logging.debug(data)
+                    files = {'sink_file': si_f,
+                             'source_file': so_f,
+                             'rules_file': r_f,
+                             'data': ('data.json', json.dumps(data))}
+                    try:
+                        r = requests.post(server_url+'/Query', files=files)
+                        r.raise_for_status()
+                    except requests.exceptions.HTTPError as err:
+                        #logging.error(err)
+                        logging.error(r.text)
+                        return False
+                    status = r.headers['status_message']
+                    status = status.replace('--', '\n')
+                    logging.info(status)
+                    #not sure why Galaxy does not detect the logging results, need to print the status message to handle WARNINGS
+                    print(status)
+                    return_content = r.content
+                    logging.info(status)
+                    with open(scope_csv, 'wb') as ot:
+                        ot.write(return_content)
 
 
 ##
@@ -83,19 +99,20 @@ def retropathUpload(sinkfile,
 #
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('Python wrapper to run RetroPath2.0')
-    parser.add_argument('-sinkfile', type=str)
-    parser.add_argument('-sourcefile', type=str)
+    parser.add_argument('-sink_file', type=str)
+    parser.add_argument('-source_file', type=str)
     parser.add_argument('-max_steps', type=int)
-    parser.add_argument('-rulesfile', type=str)
-    parser.add_argument('-rulesfile_format', type=str)
+    parser.add_argument('-rules_file', type=str)
+    parser.add_argument('-rules_file_format', type=str)
     parser.add_argument('-scope_csv', type=str)
     parser.add_argument('-topx', type=int, default=100)
     parser.add_argument('-dmin', type=int, default=0)
-    parser.add_argument('-dmax', type=int, default=100)
+    parser.add_argument('-dmax', type=int, default=1000)
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
     parser.add_argument('-server_url', type=str, default='http://0.0.0.0:8888/REST')
-    parser.add_argument('-timeout', type=int, default=30)
+    parser.add_argument('-time_out', type=int, default=90)
+    parser.add_argument('-ram_limit', type=int, default=30)
     parser.add_argument('-partial_retro', type=str, default='False')
     params = parser.parse_args()
     if params.max_steps<=0:
@@ -123,17 +140,18 @@ if __name__ == "__main__":
     else:
         logging.error('Cannot interpret partial_retro: '+str(params.partial_retro))
         exit(1)
-    retropathUpload(params.sinkfile,
-                    params.sourcefile,
+    retropathUpload(params.sink_file,
+                    params.source_file,
                     params.max_steps,
-                    params.rulesfile,
-                    params.rulesfile_format,
+                    params.rules_file,
+                    params.rules_file_format,
+                    params.scope_csv,
                     params.topx,
                     params.dmin,
                     params.dmax,
                     params.mwmax_source,
                     params.mwmax_cof,
                     params.server_url,
-                    params.scope_csv,
-                    params.timeout,
+                    params.time_out,
+                    params.ram_limit,
                     partial_retro)

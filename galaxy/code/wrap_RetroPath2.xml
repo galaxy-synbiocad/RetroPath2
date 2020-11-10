@@ -8,10 +8,10 @@
 		<regex match="WARNING" level="warning" source="both"/>
 	</stdio>
   <command detect_errors="exit_code"><![CDATA[
-		'$__tool_directory__/tool_RetroPath2.py' -sinkfile '$sinkfile' -sourcefile '$sourcefile' -max_steps '$max_steps' -rulesfile_format '$rulesfile.format' -rulesfile '$rulesfile.input_rules' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -server_url '$adv.server_url' -timeout '$adv.timeout' -scope_csv '$scope_csv' -partial_retro '$adv.partial_retro'
+		'$__tool_directory__/tool_RetroPath2.py' -sink_file '$sink_file' -source_file '$source_file' -max_steps '$max_steps' -rules_file_format '$rules_file.format' -rules_file '$rules_file.input_rules' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -server_url '$adv.server_url' -time_out '$adv.time_out' -scope_csv '$scope_csv' -partial_retro '$adv.partial_retro'
   ]]></command>
   <inputs>
-    <conditional name="rulesfile">
+    <conditional name="rules_file">
       <param name="format" type="select" label="Rules input format">
         <option value="tar" type="text" selected="true">TAR</option>
         <option value="csv" type="text">CSV</option>
@@ -23,8 +23,8 @@
 		    <param name="input_rules" type="data" format="tar" label="Rules File" />
       </when>
     </conditional>
-		<param name="sinkfile" type="data" format="csv" label="Sink File" />
-		<param name="sourcefile" type="data" format="csv" label="Source File" />
+		<param name="sink_file" type="data" format="csv" label="Sink File" />
+		<param name="source_file" type="data" format="csv" label="Source File" />
 		<param name="max_steps" type="integer" value="3" label="Maximal Pathway length" />
 		<section name="adv" title="Advanced Options" expanded="false">
 			<param name="topx" type="integer" value="100" label="TopX" />
@@ -33,7 +33,7 @@
       <param name="mwmax_source" type="integer" value="1000" label="Molecular weight of source (Da)" />
 			<param name="mwmax_cof" type="integer" value="1000" label="Molecular weight of coefficients (Da)" />
 			<param name="server_url" type="text" value="http://retropath2_redis:8888/REST" label="Server URL" />
-			<param name="timeout" type="integer" value="90" label="Timeout (min)" />
+			<param name="time_out" type="integer" value="90" label="Timeout (min)" />
       <param name="partial_retro" type="boolean" truevalue="True" falsevalue="False" checked="false" label="Return partial results" />
 		</section>
   </inputs>
@@ -56,11 +56,11 @@ Input
 Required:
 
 
-* **-sinkfile**\ : (string) Path to the sink file
-* **-sourcefile**\ : (string) Path to the source file
+* **-sink_file**\ : (string) Path to the sink file
+* **-source_file**\ : (string) Path to the source file
 * **-max_steps**\ : (integer) Maximal number of steps 
-* **-rulesfile**\ : (string) Path to the rules file
-* **-rulesfile_format**\ : (string) Valid Options: tar, csv. Format of the rules file
+* **-rules_file**\ : (string) Path to the rules file
+* **-rules_file_format**\ : (string) Valid Options: tar, csv. Format of the rules file
 
 Advanced options:
 
@@ -70,7 +70,7 @@ Advanced options:
 * **-dmax**\ : (integer, default: 1000)
 * **-mwmax_source**\ : (integer, default: 1000)
 * **-mwmax_cof**\ : (integer, default: 1000)
-* **-timeout**\ : (integer, default: 30) Timeout in minutes
+* **-time_out**\ : (integer, default: 30) Timeout in minutes
 * **-server_url**\ : (string, default: http://0.0.0.0:8888/REST) IP address of the REST service
 
 Output

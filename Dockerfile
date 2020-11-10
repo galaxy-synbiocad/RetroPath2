@@ -80,7 +80,7 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 
 #FROM ibisba/knime-base:3.6.2
 
-############################### JOAN rpData ##############################
+############################### RetroPath2 ##############################
 
 #stable version
 #ENV RETROPATH_VERSION 8
@@ -141,6 +141,16 @@ COPY rpTool.py /home/
 COPY rpToolServe.py /home/
 COPY start.sh /home/
 COPY supervisor.conf /home/
+COPY sanity_test.tar.xz /home/
+
+####### Sanity Test ######
+
+ENV RP2_RESULTS_SHA256 7428ebc0c25d464fbfdd6eb789440ddc88011fb6fc14f4ce7beb57a6d1fbaec2
+RUN tar xf /home/sanity_test.tar.xz -C /home/ 
+RUN /home/test/tool_RetroPath2.py -sinkfile /home/test/sink.csv -sourcefile /home/test/source.csv -rulesfile /home/test/rules.tar -rulesfile_format tar -max_steps 3 -scope_csv test_scope.csv
+RUN echo "$RP2_RESULTS_SHA256 test_scope.csv" | sha256sum --check
+
+###### Server #####
 
 RUN chmod +x /home/start.sh
 CMD ["/home/start.sh"]

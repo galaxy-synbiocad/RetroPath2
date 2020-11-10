@@ -16,6 +16,25 @@ import sys
 import logging
 from logging.handlers import RotatingFileHandler
 
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['wsgi']
+    }
+})
+
+
 from rq import Connection, Queue
 from redis import Redis
 
@@ -72,13 +91,13 @@ class RestQuery(Resource):
         :rtype: Response
         :return: Flask Response object 
         """
-        sourcefile_bytes = request.files['sourcefile'].read()
-        sinkfile_bytes = request.files['sinkfile'].read()
-        rulesfile_bytes = request.files['rulesfile'].read()
+        source_file_bytes = request.files['source_file'].read()
+        sink_file_bytes = request.files['sink_file'].read()
+        rules_file_bytes = request.files['rules_file'].read()
         params = json.load(request.files['data'])
         ##### REDIS ##############
         conn = Redis()
-        q = Queue('default', connection=conn, default_timeout='24h')
+        q = Queue('default', connection=conn, default_time_out='24h')
         #pass the cache parameters to the rpCofactors object
         if params['partial_retro']=='True' or params['partial_retro']=='T' or params['partial_retro']=='true' or params['partial_retro']==True:
             partial_retro = True
@@ -88,17 +107,27 @@ class RestQuery(Resource):
             app.logger.warning('Cannot interpret partial_retro: '+str(params['partial_retro']))
             app.logger.warning('Setting to False')
             partial_retro = False
+        app.logger.debug('max_steps: '+str(params['max_steps']))
+        app.logger.debug('topx: '+str(params['topx']))
+        app.logger.debug('dmin: '+str(params['dmin']))
+        app.logger.debug('dmax: '+str(params['dmax']))
+        app.logger.debug('mwmax_source: '+str(params['mwmax_source']))
+        app.logger.debug('mwmax_cof: '+str(params['mwmax_cof']))
+        app.logger.debug('time_out: '+str(params['time_out']))
+        app.logger.debug('ram_limit: '+str(params['ram_limit']))
+        app.logger.debug('partial_retro: '+str(params['partial_retro']))
         async_results = q.enqueue(rpTool.run_rp2,
-                                  sourcefile_bytes,
-                                  sinkfile_bytes,
-                                  rulesfile_bytes,
+                                  source_file_bytes,
+                                  sink_file_bytes,
+                                  rules_file_bytes,
                                   int(params['max_steps']),
                                   int(params['topx']),
                                   int(params['dmin']),
                                   int(params['dmax']),
                                   int(params['mwmax_source']),
                                   int(params['mwmax_cof']),
-                                  int(params['timeout']),
+                                  int(params['time_out']),
+                                  int(params['ram_limit']),
                                   partial_retro)
         result = None
         while result is None:
@@ -109,17 +138,17 @@ class RestQuery(Resource):
         ###########################
         if result[1]==b'timeouterror' or result[1]==b'timeoutwarning':
             #for debugging
-            #app.logger.warning(result[2])
+            app.logger.warning(result[2])
             if not partial_retro:
-                app.logger.error('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
-                return Response('Timeout of RetroPath2.0--Try increasing the timeout limit of the tool', status=408)
+                app.logger.error('Timeout of RetroPath2.0 -- Try increasing the time_out limit of the tool')
+                return Response('Timeout of RetroPath2.0--Try increasing the time_out limit of the tool', status=408)
             else:
                 if result[0]==b'':
                     return Response('Timeout caused RetroPath2.0 to not find any solutions', status=404)
                 else:
-                    app.logger.warning('Timeout of RetroPath2.0 -- Try increasing the timeout limit of the tool')
+                    app.logger.warning('Timeout of RetroPath2.0 -- Try increasing the time_out limit of the tool')
                     app.logger.warning('Returning partial results') 
-                    status_message = 'WARNING: Timeout of RetroPath2.0--Try increasing the timeout limit of the tool--Returning partial results'
+                    status_message = 'WARNING: Timeout of RetroPath2.0--Try increasing the time_out limit of the tool--Returning partial results'
                     scope_csv = io.BytesIO()
                     scope_csv.write(result[0])
                     ###### IMPORTANT ######
@@ -130,7 +159,7 @@ class RestQuery(Resource):
                     return response
         elif result[1]==b'memwarning' or result[1]==b'memerror':
             #for debugging
-            #app.logger.warning(result[2])
+            app.logger.warning(result[2])
             if not partial_retro:
                 app.logger.error('RetroPath2.0 has exceeded its memory limit')
                 return Response('RetroPath2.0 has exceeded its memory limit', status=403)
