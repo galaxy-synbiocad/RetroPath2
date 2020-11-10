@@ -31,10 +31,18 @@ api = Api(app)
 
 #app.logger.setLevel(logging.WARNING)
 
-## Stamp of rpCofactors
-#
-#
 def stamp(data, status=1):
+    """Default message to return
+
+    :param data: The data to be passes
+    :param status: The int value of the status
+    
+    :type data: dict
+    :type status: int
+
+    :rtype: dict
+    :return: The dict of the stamp
+    """
     appinfo = {'app': 'RetroPath2.0', 'version': '8.0',
                'author': 'Melchior du Lac, Joan Herisson, Thomas Duigou',
                'organization': 'BRS',
@@ -45,23 +53,25 @@ def stamp(data, status=1):
     return out
 
 
-## REST App.
-#
-#
 class RestApp(Resource):
+    """The Flask methods that we support, post and get
+    """
     def post(self):
         return jsonify(stamp(None))
     def get(self):
         return jsonify(stamp(None))
 
 
-## REST Query
-#
-# REST interface that generates the Design.
-# Avoid returning numpy or pandas object in
-# order to keep the client lighter.
+# NOTE: Avoid returning numpy or pandas object in order to keep the client lighter.
 class RestQuery(Resource):
+    """Class containing the REST requests for RP2
+    """
     def post(self):
+        """Make the REST request using the POST method
+
+        :rtype: Response
+        :return: Flask Response object 
+        """
         sourcefile_bytes = request.files['sourcefile'].read()
         sinkfile_bytes = request.files['sinkfile'].read()
         rulesfile_bytes = request.files['rulesfile'].read()
