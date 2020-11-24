@@ -26,7 +26,6 @@ def main(sinkfile,
          mwmax_source=1000,
          mwmax_cof=1000,
          timeout=90,
-         ram_limit=30,
          partial_retro=False):
     """Call the docker to run KNIME RetroPath2.0 workflow
 
@@ -103,8 +102,6 @@ def main(sinkfile,
                        '/home/tmp_output/output.dat',
                        '-timeout',
                        str(timeout),
-                       '-ram_limit',
-                       str(ram_limit),
                        '-partial_retro',
                        str(partial_retro)]
             container = docker_client.containers.run(image_str,
@@ -143,7 +140,6 @@ if __name__ == "__main__":
     parser.add_argument('-mwmax_source', type=int, default=1000)
     parser.add_argument('-mwmax_cof', type=int, default=1000)
     parser.add_argument('-timeout', type=int, default=90)
-    parser.add_argument('-ram_limit', type=int, default=30)
     parser.add_argument('-partial_retro', type=str, default='False')
     params = parser.parse_args()
     if params.max_steps<=0:
@@ -164,9 +160,6 @@ if __name__ == "__main__":
     if params.dmax<params.dmin:
         logging.error('Cannot have dmin>dmax : dmin: '+str(params.dmin)+', dmax: '+str(params.dmax))
         exit(1)
-    if params.ram_limit<=0.0:
-        logging.error('Cannot have a RAM limit that is less or equal to 0.0: '+str(params.ram_limit))
-        exit(1)
     main(params.sinkfile,
          params.sourcefile,
          params.max_steps,
@@ -179,5 +172,4 @@ if __name__ == "__main__":
          params.mwmax_source,
          params.mwmax_cof,
          params.timeout,
-         params.ram_limit,
          params.partial_retro)

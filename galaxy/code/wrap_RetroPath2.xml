@@ -12,7 +12,7 @@
 		<regex match="ramerror" level="error" />
 	</stdio>
   <command detect_errors="exit_code"><![CDATA[
-		'$__tool_directory__/tool_RetroPath2.py' -sinkfile '$sinkfile' -sourcefile '$sourcefile' -max_steps '$max_steps' -rulesfile '$rulesfile.input_rules' -rulesfile_format '$rulesfile.format' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -timeout '$adv.timeout' -ram_limit '$adv.ram_limit' -scope_csv '$scope_csv'
+		'$__tool_directory__/tool_RetroPath2.py' -sinkfile '$sinkfile' -sourcefile '$sourcefile' -max_steps '$max_steps' -rulesfile '$rulesfile.input_rules' -rulesfile_format '$rulesfile.format' -topx '$adv.topx' -dmin '$adv.dmin' -dmax '$adv.dmax' -mwmax_source '$adv.mwmax_source' -mwmax_cof '$adv.mwmax_cof' -timeout '$adv.timeout'  -scope_csv '$scope_csv'
   ]]></command>
   <inputs>
     <conditional name="rulesfile">
@@ -37,7 +37,6 @@
 			<param name="mwmax_source" type="integer" value="1000" label="mwmax source" />
 			<param name="mwmax_cof" type="integer" value="1000" label="mwmax cof" />
 			<param name="timeout" type="integer" value="90" label="Timeout (min)" />
-			<param name="ram_limit" type="integer" value="30" label="Maximum RAM in GB" />
 		</section>
   </inputs>
   <outputs>
