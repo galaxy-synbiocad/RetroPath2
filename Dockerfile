@@ -85,14 +85,18 @@ ONBUILD RUN rm /scripts/getversion.py && rm /scripts/listvariables.py && rm /scr
 #stable version
 #ENV RETROPATH_VERSION 8
 #new version 
-ENV RETROPATH_VERSION 9
+#ENV RETROPATH_VERSION 9
+#ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_-_a_retrosynthesis_workflow_with_tutorial_and_example_data-v${RETROPATH_VERSION}.zip
+ENV RETROPATH_VERSION 10
 ENV RETROPATH_URL https://myexperiment.org/workflows/4987/download/RetroPath2.0_-_a_retrosynthesis_workflow_with_tutorial_and_example_data-v${RETROPATH_VERSION}.zip
 # NOTE: Update sha256sum for each release
 #TODO: update the SHA356 for the new version of RetroPath2
 #version 8
 #ENV RETROPATH_SHA256 7d81b42f6eddad2841b67c32eeaf66cb93227d6c2542938251be6b77b49c0716
 #version 9
-ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
+#ENV RETROPATH_SHA256 79069d042df728a4c159828c8f4630efe1b6bb1d0f254962e5f40298be56a7c4
+#version 10
+ENV RETROPATH_SHA256 e2ac2c94e9ebe4ede454195bb26f788d3ad7e219bb0e16605cf9a5c72aae9b57
 
 RUN apt-get --quiet update && \
 	apt-get --quiet --yes dist-upgrade && \
