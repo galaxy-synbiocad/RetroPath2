@@ -32,7 +32,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser('Python wrapper for the KNIME workflow to run RetroPath2.0')
     parser.add_argument('-sinkfile', type=str)
     parser.add_argument('-sourcefile', type=str)
-    parser.add_argument('-max_steps', type=int)
+    parser.add_argument('-max_steps', type=int, default=3)
     parser.add_argument('-rulesfile', type=str)
     parser.add_argument('-rulesfile_format', type=str)
     parser.add_argument('-scope_csv', type=str)
